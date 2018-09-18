@@ -1,0 +1,23 @@
+.container {
+  max-width: 350px;
+  border: 2px solid blue;
+  border-radius: 10px;
+  background-color: #b3c6ff;
+}
+
+#output {
+  background-color: white;
+  border-radius: 3px;
+}
+
+.col {
+  border: 1px solid #8c8c8c;
+}
+
+.btn {
+  font-size: 24px;
+}
+
+#clear {
+  color: white;
+}
