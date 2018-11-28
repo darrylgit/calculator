@@ -4,7 +4,7 @@ $(document).ready(function() {
   var output = '0';
   var toCalc = [];
 
-  var states = {
+  var phases = {
     initial: true,
     operator: false,
     calculate: false,
@@ -27,7 +27,7 @@ $(document).ready(function() {
 
   $('#clear').click(function() {
     clear();
-    states.operator = false;
+    phases.operator = false;
   });
 
   function display(value) {
@@ -42,11 +42,11 @@ $(document).ready(function() {
 
   function load(integer) {
     //if a calculation has just been performed, clear it and start a new array
-    if (states.calcComplete) {
+    if (phases.calcComplete) {
       clear();
-      states.calcComplete = false;
+      phases.calcComplete = false;
     }
-    //if index 'current' doesn't exist, push a new array with integer inside
+    //if index 'current' is falsy (that is, zero), push a new array with integer inside
     //else, push integer into existing array
     if (!toCalc[current]) {
       toCalc.push([integer]);
@@ -59,8 +59,8 @@ $(document).ready(function() {
   function operate(operator) {
     current += 2;
     toCalc.push(operator);
-    states.operator = false;
-    states.decimal = true;
+    phases.operator = false;
+    phases.decimal = true;
     console.log(toCalc);
   }
 
@@ -69,88 +69,88 @@ $(document).ready(function() {
   //========================================
 
   $("#1").click(function() {
-    states.operator = true;
+    phases.operator = true;
     load(1);
     display("1");
     if (toCalc.length > 2) {
-      states.calculate = true;
+      phases.calculate = true;
     }
   });
 
   $("#2").click(function() {
-    states.operator = true;
+    phases.operator = true;
     load(2);
     display("2");
     if (toCalc.length > 2) {
-      states.calculate = true;
+      phases.calculate = true;
     }
   });
 
   $("#3").click(function() {
-    states.operator = true;
+    phases.operator = true;
     load(3);
     display("3");
     if (toCalc.length > 2) {
-      states.calculate = true;
+      phases.calculate = true;
     }
   });
 
   $("#4").click(function() {
-    states.operator = true;
+    phases.operator = true;
     load(4);
     display("4");
     if (toCalc.length > 2) {
-      states.calculate = true;
+      phases.calculate = true;
     }
   });
 
   $("#5").click(function() {
-    states.operator = true;
+    phases.operator = true;
     load(5);
     display("5");
     if (toCalc.length > 2) {
-      states.calculate = true;
+      phases.calculate = true;
     }
   });
 
   $("#6").click(function() {
-    states.operator = true;
+    phases.operator = true;
     load(6);
     display("6");
     if (toCalc.length > 2) {
-      states.calculate = true;
+      phases.calculate = true;
     }
   });
 
   $("#7").click(function() {
-    states.operator = true;
+    phases.operator = true;
     load(7);
     display("7");
     if (toCalc.length > 2) {
-      states.calculate = true;
+      phases.calculate = true;
     }
   });
 
   $("#8").click(function() {
-    states.operator = true;
+    phases.operator = true;
     load(8);
     display("8");
     if (toCalc.length > 2) {
-      states.calculate = true;
+      phases.calculate = true;
     }
   });
 
   $("#9").click(function() {
-    states.operator = true;
+    phases.operator = true;
     load(9);
     display("9");
     if (toCalc.length > 2) {
-      states.calculate = true;
+      phases.calculate = true;
     }
   });
 
   $("#0").click(function() {
-    states.operator = true;
+    phases.operator = true;
     if (output !== '0') {
       load(0);
       $('#output').empty();
@@ -158,7 +158,7 @@ $(document).ready(function() {
       $('#output').append(output);
     }
     if (toCalc.length > 2) {
-      states.calculate = true;
+      phases.calculate = true;
     }
   });
 
@@ -179,12 +179,12 @@ $(document).ready(function() {
   });
 
   $('#point').click(function() {
-    if (states.decimal) {
+    if (phases.decimal) {
       $('#output').empty();
       output += ".";
       $('#output').append(output);
       load(".");
-      states.decimal = false;
+      phases.decimal = false;
     }
   });
 
@@ -194,32 +194,32 @@ $(document).ready(function() {
 
 
   $('#divide').click(function() {
-    states.calcComplete = false;
-    if(states.operator) {
+    phases.calcComplete = false;
+    if(phases.operator) {
       display(' &divide; ');
       operate('divide');
     }
   });
 
   $('#times').click(function() {
-    states.calcComplete = false;
-    if(states.operator) {
+    phases.calcComplete = false;
+    if(phases.operator) {
       display(' &times; ');
       operate('times');
     }
   });
 
   $('#minus').click(function() {
-    states.calcComplete = false;
-    if(states.operator) {
+    phases.calcComplete = false;
+    if(phases.operator) {
       display(' &minus; ');
       operate('minus');
     }
   });
 
   $('#plus').click(function() {
-    states.calcComplete = false;
-    if(states.operator) {
+    phases.calcComplete = false;
+    if(phases.operator) {
       display(' &plus; ');
       operate('plus');
     }
@@ -228,14 +228,14 @@ $(document).ready(function() {
 
 
   $('#equals').click(function() {
-    if (states.calculate) {
-      for (i = 0; i < toCalc.length; i ++) {
-        if (Array.isArray(toCalc[i])) {
-          toCalc[i] = toCalc[i].join('');
-        }
-      }
+    if (phases.calculate) {
+
+      //join all arrays single-digit integers into larger numbers
+      toCalc.map((i) => Array.isArray(toCalc[i]) ? toCalc[i] = toCalc[i].join('') : null);
       console.log(toCalc);
 
+      //multiplication and division first by performing math on the indices
+      //behind and in front of the operator
       for (i = 0; i < toCalc.length; i ++) {
         if (toCalc[i] === "times" || toCalc[i] === "divide") {
           if (toCalc[i] === "times") {
@@ -250,6 +250,7 @@ $(document).ready(function() {
         }
       }
 
+      //after multipication and division are complete, addition and subtraction
       for (i = 0; i < toCalc.length; i ++) {
         if (toCalc[i] === "minus" || toCalc[i] === "plus") {
           if (toCalc[i] === "minus") {
@@ -266,8 +267,10 @@ $(document).ready(function() {
 
     console.log(toCalc);
 
+    //Trim answer to seven decimal places and split each digit
     var untrimmed = toCalc[0].toPrecision(7).toString().split('');
 
+    //Chop off any zeros at the end of the answer
     function trim() {
       if (untrimmed[(untrimmed.length-1)] === 0) {
         untrimmed.splice(-1, 1);
@@ -280,15 +283,14 @@ $(document).ready(function() {
     output = answer;
     toCalc = [[answer]];
     $('#output').append(output);
-    states.operator = true;
-    states.decimal = true;
-    states.calcComplete = true;
-    states.calculate = false;
+    phases.operator = true;
+    phases.decimal = true;
+    phases.calcComplete = true;
+    phases.calculate = false;
     current = 0;
   }
 
 
   });
-
 
 });
