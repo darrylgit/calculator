@@ -62,6 +62,9 @@ $(document).ready(function() {
     }
     //if index 'current' is falsy (that is, zero), push a new array with integer inside
     //else, push integer into existing array
+    if (toCalc[current] && isNaN(Number(toCalc[current]))) {
+      current++;
+    }
 
     if (!toCalc[current]) {
       toCalc.push(value);
@@ -69,18 +72,21 @@ $(document).ready(function() {
       toCalc[current].toString();
       toCalc[current] = toCalc[current] + value;
     }
-    Number(toCalc[current]);
+
+    toCalc[current] = Number(toCalc[current]);
     console.log(toCalc);
 
     display();
   }
 
   function operate(operator) {
-    current += 2;
+    current ++;
     toCalc.push(operator);
     phases.operator = false;
     phases.decimal = true;
-    console.log(toCalc);
+    if (/\.$/.test(toCalc[current - 1])) {
+      toCalc[current -1] = toCalc[current - 1] + "0";
+    }
   }
 
   //========================================
@@ -170,19 +176,24 @@ $(document).ready(function() {
   });
 
   $('#negative').click(function(){
-    if(!toCalc[current] || toCalc[current] == "0") {
-      load("-");
-    } else {
-      var negRegex = /^-/;
-      if (negRegex.test(toCalc[current])) {
-        toCalc[current] = toCalc[current].toString().split('');
-        toCalc[current].shift();
-        toCalc[current] = toCalc[current].join('');
+    if (isNaN(Number(toCalc[current]))) {
+      current++;
+    }
+
+    if (toCalc[current] != "0") {
+      if(!toCalc[current]) {
+        load("-");
       } else {
-        toCalc[current] = toCalc[current].toString().split('');
-        toCalc[current].unshift("-");
-        toCalc[current] = toCalc[current].join('');
-        //.split('').unshift("-");
+        var negRegex = /^-/;
+        if (negRegex.test(toCalc[current])) {
+          toCalc[current] = toCalc[current].toString().split('');
+          toCalc[current].shift();
+          toCalc[current] = toCalc[current].join('');
+        } else {
+          toCalc[current] = toCalc[current].toString().split('');
+          toCalc[current].unshift("-");
+          toCalc[current] = toCalc[current].join('');
+        }
       }
     }
     console.log(toCalc);
@@ -202,12 +213,45 @@ $(document).ready(function() {
     }
   });
 
-  $('#percent').click(function() {
-    display('&percnt;');
+  $('#backspace').click(function() {
+    if (/&/.test(toCalc[current])) {
+      toCalc.pop();
+      current--;
+      phases.operator = true;
+    } else {
+      makeStr = toCalc[current].toString();
+      newStr = makeStr.substring(0, makeStr.length - 1);
+      toCalc[current] = newStr;
+      if (toCalc[current] == 0){
+        toCalc.pop();
+        current--;
+        phases.operator = false;
+      }
+    }
+
+    //if current string does not terminate in a decimal point, convert to number
+    if (!/\./.test(toCalc[current])) {
+      toCalc[current] = Number(toCalc[current]);
+    }
+    console.log(toCalc);
+    display();
+
+    /*if (toCalc[current] === 0) {
+      toCacl.pop();
+      current--;
+      phases.operator = false;
+      console.log(toCalc);
+      display();
+    }*/
+
   });
 
   $('#point').click(function() {
     function loadDecimal() {
+      if (isNaN(Number(toCalc[current]))) {
+        current++;
+      }
+
       if (phases.calcComplete) {
         if (/\./.test(toCalc[0].toString())) {
           phases.decimal = false;
@@ -222,7 +266,7 @@ $(document).ready(function() {
           toCalc.push("0.");
         }
       }
-      Number(toCalc[current]);
+      //Number(toCalc[current]);
       console.log(toCalc);
       display();
     }
@@ -325,8 +369,9 @@ $(document).ready(function() {
 
     var answer = parseFloat(untrimmed.join(''));
     $('#output').empty();
-    output = answer;
     toCalc = [answer];
+    output = answer;
+
     $('#output').append(output);
     phases.operator = true;
     phases.decimal = true;
