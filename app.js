@@ -62,6 +62,7 @@ $(document).ready(function() {
     }
     //if index 'current' is falsy (that is, zero), push a new array with integer inside
     //else, push integer into existing array
+
     if (!toCalc[current]) {
       toCalc.push(value);
     } else {
@@ -89,7 +90,6 @@ $(document).ready(function() {
   $("#1").click(function() {
     phases.operator = true;
     load("1");
-    //display("1");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -98,7 +98,6 @@ $(document).ready(function() {
   $("#2").click(function() {
     phases.operator = true;
     load("2");
-    //display("2");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -107,7 +106,6 @@ $(document).ready(function() {
   $("#3").click(function() {
     phases.operator = true;
     load("3");
-    //display("3");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -116,7 +114,6 @@ $(document).ready(function() {
   $("#4").click(function() {
     phases.operator = true;
     load("4");
-    //display("4");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -125,7 +122,6 @@ $(document).ready(function() {
   $("#5").click(function() {
     phases.operator = true;
     load("5");
-    //display("5");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -134,7 +130,6 @@ $(document).ready(function() {
   $("#6").click(function() {
     phases.operator = true;
     load("6");
-    //display("6");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -143,7 +138,6 @@ $(document).ready(function() {
   $("#7").click(function() {
     phases.operator = true;
     load("7");
-    //display("7");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -152,7 +146,6 @@ $(document).ready(function() {
   $("#8").click(function() {
     phases.operator = true;
     load("8");
-    //display("8");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -161,32 +154,40 @@ $(document).ready(function() {
   $("#9").click(function() {
     phases.operator = true;
     load("9");
-    //display("9");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
   });
 
   $("#0").click(function() {
-    phases.operator = true;
-    if (output !== '0') {
+    if (toCalc[current] != "0") {
+      phases.operator = true;
       load("0");
-      $('#output').empty();
-      output += '0';
-      $('#output').append(output);
-    }
-    if (toCalc.length > 2) {
-      phases.calculate = true;
+      if (toCalc.length > 2) {
+        phases.calculate = true;
+      }
     }
   });
 
   $('#negative').click(function(){
-    var negRegex = /^-/;
-    if (negRegex.test(toCalc[current])) {
-      toCalc[current].split('').shift().join('');
+    if(!toCalc[current] || toCalc[current] == "0") {
+      load("-");
     } else {
-      toCalc[current].split('')
+      var negRegex = /^-/;
+      if (negRegex.test(toCalc[current])) {
+        toCalc[current] = toCalc[current].toString().split('');
+        toCalc[current].shift();
+        toCalc[current] = toCalc[current].join('');
+      } else {
+        toCalc[current] = toCalc[current].toString().split('');
+        toCalc[current].unshift("-");
+        toCalc[current] = toCalc[current].join('');
+        //.split('').unshift("-");
+      }
     }
+    console.log(toCalc);
+
+    display();
   })
 
 
@@ -206,44 +207,31 @@ $(document).ready(function() {
   });
 
   $('#point').click(function() {
+    function loadDecimal() {
+      if (phases.calcComplete) {
+        if (/\./.test(toCalc[0].toString())) {
+          phases.decimal = false;
+        }
+      }
+
+      if (phases.decimal) {
+        if (toCalc[current] || toCalc[current] == "0") {
+          toCalc[current].toString();
+          toCalc[current] = toCalc[current] + ".";
+        } else {
+          toCalc.push("0.");
+        }
+      }
+      Number(toCalc[current]);
+      console.log(toCalc);
+      display();
+    }
     loadDecimal();
     phases.decimal = false;
     phases.calcComplete = false;
   });
 
-  function loadDecimal() {
-    if (phases.calcComplete) {
-      if (/\./.test(toCalc[0].toString())) {
-        phases.decimal = false;
-      }
-    }
 
-    if (phases.decimal) {
-      if(!toCalc[current]){
-        toCalc.push("0.");
-      } else {
-        toCalc[current].toString();
-        toCalc[current] = toCalc[current] + ".";
-      }
-    }
-    Number(toCalc[current]);
-    console.log(toCalc);
-    /*
-    if (phases.calcComplete) {
-      clear();
-    }
-
-    if (!toCalc[current]) {
-      toCalc.push(value);
-    } else {
-      toCalc[current].toString();
-      toCalc[current] = toCalc[current] + value;
-    }
-    Number(toCalc[current]);
-    console.log(toCalc);
-    */
-    display();
-  }
 
 //========================================
 //OPERATORS
