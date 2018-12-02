@@ -30,30 +30,48 @@ $(document).ready(function() {
     phases.operator = false;
   });
 
-  function display(value) {
+  /*function display(value) {
+    console.log("Output was " + output);
+    if(phases.calcComplete){
+      output = '0';
+      phases.calcComplete = false;
+    }
     $('#output').empty();
     if (output === '0') {
-      output = value;
+      if (value === ".") {
+        output = "0."
+      } else {
+        output = value;
+      }
     } else {
       output += value;
     }
     $('#output').append(output);
+    console.log("Output became " + output);
+  }*/
+
+  function display() {
+    $('#output').empty();
+    $('#output').append(toCalc.join(''));
   }
 
-  function load(integer) {
+  function load(value) {
     //if a calculation has just been performed, clear it and start a new array
     if (phases.calcComplete) {
       clear();
-      phases.calcComplete = false;
     }
     //if index 'current' is falsy (that is, zero), push a new array with integer inside
     //else, push integer into existing array
     if (!toCalc[current]) {
-      toCalc.push([integer]);
+      toCalc.push(value);
     } else {
-      toCalc[current].push(integer);
+      toCalc[current].toString();
+      toCalc[current] = toCalc[current] + value;
     }
+    Number(toCalc[current]);
     console.log(toCalc);
+
+    display();
   }
 
   function operate(operator) {
@@ -70,8 +88,8 @@ $(document).ready(function() {
 
   $("#1").click(function() {
     phases.operator = true;
-    load(1);
-    display("1");
+    load("1");
+    //display("1");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -79,8 +97,8 @@ $(document).ready(function() {
 
   $("#2").click(function() {
     phases.operator = true;
-    load(2);
-    display("2");
+    load("2");
+    //display("2");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -88,8 +106,8 @@ $(document).ready(function() {
 
   $("#3").click(function() {
     phases.operator = true;
-    load(3);
-    display("3");
+    load("3");
+    //display("3");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -97,8 +115,8 @@ $(document).ready(function() {
 
   $("#4").click(function() {
     phases.operator = true;
-    load(4);
-    display("4");
+    load("4");
+    //display("4");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -106,8 +124,8 @@ $(document).ready(function() {
 
   $("#5").click(function() {
     phases.operator = true;
-    load(5);
-    display("5");
+    load("5");
+    //display("5");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -115,8 +133,8 @@ $(document).ready(function() {
 
   $("#6").click(function() {
     phases.operator = true;
-    load(6);
-    display("6");
+    load("6");
+    //display("6");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -124,8 +142,8 @@ $(document).ready(function() {
 
   $("#7").click(function() {
     phases.operator = true;
-    load(7);
-    display("7");
+    load("7");
+    //display("7");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -133,8 +151,8 @@ $(document).ready(function() {
 
   $("#8").click(function() {
     phases.operator = true;
-    load(8);
-    display("8");
+    load("8");
+    //display("8");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -142,8 +160,8 @@ $(document).ready(function() {
 
   $("#9").click(function() {
     phases.operator = true;
-    load(9);
-    display("9");
+    load("9");
+    //display("9");
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
@@ -152,7 +170,7 @@ $(document).ready(function() {
   $("#0").click(function() {
     phases.operator = true;
     if (output !== '0') {
-      load(0);
+      load("0");
       $('#output').empty();
       output += '0';
       $('#output').append(output);
@@ -161,6 +179,15 @@ $(document).ready(function() {
       phases.calculate = true;
     }
   });
+
+  $('#negative').click(function(){
+    var negRegex = /^-/;
+    if (negRegex.test(toCalc[current])) {
+      toCalc[current].split('').shift().join('');
+    } else {
+      toCalc[current].split('')
+    }
+  })
 
 
 
@@ -179,14 +206,44 @@ $(document).ready(function() {
   });
 
   $('#point').click(function() {
-    if (phases.decimal) {
-      $('#output').empty();
-      output += ".";
-      $('#output').append(output);
-      load(".");
-      phases.decimal = false;
-    }
+    loadDecimal();
+    phases.decimal = false;
+    phases.calcComplete = false;
   });
+
+  function loadDecimal() {
+    if (phases.calcComplete) {
+      if (/\./.test(toCalc[0].toString())) {
+        phases.decimal = false;
+      }
+    }
+
+    if (phases.decimal) {
+      if(!toCalc[current]){
+        toCalc.push("0.");
+      } else {
+        toCalc[current].toString();
+        toCalc[current] = toCalc[current] + ".";
+      }
+    }
+    Number(toCalc[current]);
+    console.log(toCalc);
+    /*
+    if (phases.calcComplete) {
+      clear();
+    }
+
+    if (!toCalc[current]) {
+      toCalc.push(value);
+    } else {
+      toCalc[current].toString();
+      toCalc[current] = toCalc[current] + value;
+    }
+    Number(toCalc[current]);
+    console.log(toCalc);
+    */
+    display();
+  }
 
 //========================================
 //OPERATORS
@@ -196,32 +253,32 @@ $(document).ready(function() {
   $('#divide').click(function() {
     phases.calcComplete = false;
     if(phases.operator) {
+      operate(' &divide; ');
       display(' &divide; ');
-      operate('divide');
     }
   });
 
   $('#times').click(function() {
     phases.calcComplete = false;
     if(phases.operator) {
+      operate(' &times; ');
       display(' &times; ');
-      operate('times');
     }
   });
 
   $('#minus').click(function() {
     phases.calcComplete = false;
     if(phases.operator) {
+      operate(' &minus; ');
       display(' &minus; ');
-      operate('minus');
     }
   });
 
   $('#plus').click(function() {
     phases.calcComplete = false;
     if(phases.operator) {
+      operate(' &plus; ');
       display(' &plus; ');
-      operate('plus');
     }
   });
 
@@ -231,18 +288,18 @@ $(document).ready(function() {
     if (phases.calculate) {
 
       //join all arrays single-digit integers into larger numbers
-      toCalc.map((i) => Array.isArray(toCalc[i]) ? toCalc[i] = toCalc[i].join('') : null);
+      //toCalc.map((i) => Array.isArray(toCalc[i]) ? toCalc[i] = toCalc[i].join('') : null);
       console.log(toCalc);
 
       //multiplication and division first by performing math on the indices
       //behind and in front of the operator
       for (i = 0; i < toCalc.length; i ++) {
-        if (toCalc[i] === "times" || toCalc[i] === "divide") {
-          if (toCalc[i] === "times") {
+        if (toCalc[i] === " &times; " || toCalc[i] === " &divide; ") {
+          if (toCalc[i] === " &times; ") {
             toCalc[(i-1)] = toCalc[(i-1)] * toCalc[(i+1)];
             toCalc.splice(i, 2);
             i--;
-          } else if (toCalc[i] === "divide") {
+          } else if (toCalc[i] === " &divide; ") {
             toCalc[(i-1)] = toCalc[(i-1)] / toCalc[(i+1)];
             toCalc.splice(i, 2);
             i--;
@@ -252,12 +309,12 @@ $(document).ready(function() {
 
       //after multipication and division are complete, addition and subtraction
       for (i = 0; i < toCalc.length; i ++) {
-        if (toCalc[i] === "minus" || toCalc[i] === "plus") {
-          if (toCalc[i] === "minus") {
+        if (toCalc[i] === " &minus; " || toCalc[i] === " &plus; ") {
+          if (toCalc[i] === " &minus; ") {
             toCalc[(i-1)] = toCalc[(i-1)] - toCalc[(i+1)];
             toCalc.splice(i, 2);
             i--;
-          } else if (toCalc[i] === "plus") {
+          } else if (toCalc[i] === " &plus; ") {
             toCalc[(i-1)] = parseFloat(toCalc[(i-1)]) + parseFloat(toCalc[(i+1)]);
             toCalc.splice(i, 2);
             i--;
@@ -281,7 +338,7 @@ $(document).ready(function() {
     var answer = parseFloat(untrimmed.join(''));
     $('#output').empty();
     output = answer;
-    toCalc = [[answer]];
+    toCalc = [answer];
     $('#output').append(output);
     phases.operator = true;
     phases.decimal = true;
