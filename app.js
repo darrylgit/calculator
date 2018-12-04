@@ -48,20 +48,16 @@ $(document).ready(function() {
       toCalc.push('');
     }
 
-    //console.log(current);
     console.log(toCalc);
 
-
-    //if the current index is falsy (an empty string or zero), and it's also not a negative sign, it now equals value 
-    if (!Number(toCalc[current]) && toCalc[current] != "-"){
+    //if the current index is falsy (an empty string or zero), and it's also not a negative sign or a decimal point it now equals value
+    if (!Number(toCalc[current]) && toCalc[current] != "-" && toCalc[current] != "0."){
       toCalc[current] = value;
     //otherwise, concatenate
     } else {
-      //toCalc[current].toString();
       toCalc[current] = toCalc[current] + value;
     }
 
-    //toCalc[current] = Number(toCalc[current]);
     console.log(toCalc);
 
     display();
@@ -75,6 +71,7 @@ $(document).ready(function() {
     if (/\.$/.test(toCalc[current - 1])) {
       toCalc[current -1] = toCalc[current - 1] + "0";
     }
+    display();
   }
 
   //========================================
@@ -202,25 +199,26 @@ $(document).ready(function() {
   });
 
   $('#backspace').click(function() {
+    //if current index is an HTML entity (an operator), remove the entire index
     if (/&/.test(toCalc[current])) {
       toCalc.pop();
       current--;
       phases.operator = true;
     } else {
-      makeStr = toCalc[current].toString();
-      newStr = makeStr.substring(0, makeStr.length - 1);
-      toCalc[current] = newStr;
-      if (toCalc[current] == 0){
+      //makeStr = toCalc[current].toString();
+      //newStr = makeStr.substring(0, makeStr.length - 1);
+      toCalc[current] = toCalc[current].substring(0, toCalc[current].length - 1);
+      if (toCalc[current] === "" && toCalc.length > 1){
         toCalc.pop();
         current--;
         phases.operator = false;
       }
     }
-
+    /*
     //if current string does not terminate in a decimal point, convert to number
     if (!/\./.test(toCalc[current])) {
       toCalc[current] = Number(toCalc[current]);
-    }
+    }*/
     console.log(toCalc);
     display();
 
@@ -236,10 +234,12 @@ $(document).ready(function() {
 
   $('#point').click(function() {
     function loadDecimal() {
-      if (isNaN(Number(toCalc[current]))) {
+      console.log(current);
+      if (isNaN(Number(toCalc[current])) && toCalc[current] != "-" && toCalc[current] != "") {
         current++;
       }
 
+      //if a calculation has been completed and the answer already has a decimal point, disable adding anothing decimal point
       if (phases.calcComplete) {
         if (/\./.test(toCalc[0].toString())) {
           phases.decimal = false;
@@ -248,8 +248,10 @@ $(document).ready(function() {
 
       if (phases.decimal) {
         if (toCalc[current] || toCalc[current] == "0") {
-          toCalc[current].toString();
+          //toCalc[current].toString();
           toCalc[current] = toCalc[current] + ".";
+        } else if (toCalc[current] == "-" || toCalc[current] == '') {
+          toCalc[current] = toCalc[current] + "0."
         } else {
           toCalc.push("0.");
         }
@@ -274,7 +276,7 @@ $(document).ready(function() {
     phases.calcComplete = false;
     if(phases.operator) {
       operate(' &divide; ');
-      display(' &divide; ');
+      //display(' &divide; ');
     }
   });
 
@@ -282,7 +284,7 @@ $(document).ready(function() {
     phases.calcComplete = false;
     if(phases.operator) {
       operate(' &times; ');
-      display(' &times; ');
+      //display(' &times; ');
     }
   });
 
@@ -290,7 +292,7 @@ $(document).ready(function() {
     phases.calcComplete = false;
     if(phases.operator) {
       operate(' &minus; ');
-      display(' &minus; ');
+      //display(' &minus; ');
     }
   });
 
@@ -298,7 +300,7 @@ $(document).ready(function() {
     phases.calcComplete = false;
     if(phases.operator) {
       operate(' &plus; ');
-      display(' &plus; ');
+      //display(' &plus; ');
     }
   });
 
