@@ -2,7 +2,7 @@ $(document).ready(function() {
 
   var parOpen = true;
   var output = '0';
-  var toCalc = [];
+  var toCalc = [''];
 
   var phases = {
     initial: true,
@@ -21,7 +21,7 @@ $(document).ready(function() {
     $('#output').empty();
     output = "0";
     $('#output').append(output);
-    toCalc = [];
+    toCalc = [''];
     current = 0;
   }
 
@@ -30,25 +30,6 @@ $(document).ready(function() {
     phases.operator = false;
   });
 
-  /*function display(value) {
-    console.log("Output was " + output);
-    if(phases.calcComplete){
-      output = '0';
-      phases.calcComplete = false;
-    }
-    $('#output').empty();
-    if (output === '0') {
-      if (value === ".") {
-        output = "0."
-      } else {
-        output = value;
-      }
-    } else {
-      output += value;
-    }
-    $('#output').append(output);
-    console.log("Output became " + output);
-  }*/
 
   function display() {
     $('#output').empty();
@@ -60,20 +41,27 @@ $(document).ready(function() {
     if (phases.calcComplete) {
       clear();
     }
-    //if index 'current' is falsy (that is, zero), push a new array with integer inside
-    //else, push integer into existing array
+
+    //if current index is NaN (i.e. if it's an operator), begin a new array index
     if (toCalc[current] && isNaN(Number(toCalc[current]))) {
       current++;
+      toCalc.push('');
     }
 
-    if (!toCalc[current]) {
-      toCalc.push(value);
+    //console.log(current);
+    console.log(toCalc);
+
+
+    //if the current index is falsy (an empty string or zero), it now equals value
+    if (!Number(toCalc[current])){
+      toCalc[current] = value;
+    //otherwise, concatenate
     } else {
-      toCalc[current].toString();
+      //toCalc[current].toString();
       toCalc[current] = toCalc[current] + value;
     }
 
-    toCalc[current] = Number(toCalc[current]);
+    //toCalc[current] = Number(toCalc[current]);
     console.log(toCalc);
 
     display();
