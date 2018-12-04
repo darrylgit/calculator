@@ -42,8 +42,8 @@ $(document).ready(function() {
       clear();
     }
 
-    //if current index is NaN (i.e. if it's an operator), begin a new array index
-    if (toCalc[current] && isNaN(Number(toCalc[current]))) {
+    //if current index is NaN (i.e. if it's an operator), begin a new array index UNLESS IT'S A NEGATIVE SIGN
+    if (toCalc[current] && isNaN(Number(toCalc[current])) && toCalc[current] != "-") {
       current++;
       toCalc.push('');
     }
@@ -52,8 +52,8 @@ $(document).ready(function() {
     console.log(toCalc);
 
 
-    //if the current index is falsy (an empty string or zero), it now equals value
-    if (!Number(toCalc[current])){
+    //if the current index is falsy (an empty string or zero), and it's also not a negative sign, it now equals value 
+    if (!Number(toCalc[current]) && toCalc[current] != "-"){
       toCalc[current] = value;
     //otherwise, concatenate
     } else {
