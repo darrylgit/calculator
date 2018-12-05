@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  var parOpen = true;
+
   var output = '0';
   var toCalc = [''];
 
@@ -9,7 +9,12 @@ $(document).ready(function() {
     operator: false,
     calculate: false,
     calcComplete: false,
-    decimal: true
+    decimal: true,
+    //parentheses
+    parHasBeenOpened: false,
+    parOperatorAdded: false,
+    parCanClose: false,
+    openParCount: 0,
   }
 
   var current = 0;
@@ -17,12 +22,12 @@ $(document).ready(function() {
   $('#output').append(output);
 
   function clear() {
-    parOpen = true;
     $('#output').empty();
     output = "0";
     $('#output').append(output);
     toCalc = [''];
     current = 0;
+    phases.calcComplete = false;
   }
 
   $('#clear').click(function() {
@@ -37,12 +42,14 @@ $(document).ready(function() {
   }
 
   function load(value) {
+    console.log(phases.calcComplete);
     //if a calculation has just been performed, clear it and start a new array
     if (phases.calcComplete) {
       clear();
     }
 
-    //if current index is NaN (i.e. if it's an operator), begin a new array index UNLESS IT'S A NEGATIVE SIGN
+    //if current index is NaN (i.e. if it's an operator), begin a new array
+      //index UNLESS IT'S A NEGATIVE SIGN
     if (toCalc[current] && isNaN(Number(toCalc[current])) && toCalc[current] != "-") {
       current++;
       toCalc.push('');
@@ -50,8 +57,9 @@ $(document).ready(function() {
 
     console.log(toCalc);
 
-    //if the current index is falsy (an empty string or zero), and it's also not a negative sign or a decimal point it now equals value
-    if (!Number(toCalc[current]) && toCalc[current] != "-" && toCalc[current] != "0."){
+    //if the current index is falsy (an empty string or zero), and it's also not
+      //a negative sign or a decimal point it now equals value
+    if (!Number(toCalc[current]) && toCalc[current] != "-" && toCalc[current] != "0.") {
       toCalc[current] = value;
     //otherwise, concatenate
     } else {
@@ -63,16 +71,6 @@ $(document).ready(function() {
     display();
   }
 
-  function operate(operator) {
-    current ++;
-    toCalc.push(operator);
-    phases.operator = false;
-    phases.decimal = true;
-    if (/\.$/.test(toCalc[current - 1])) {
-      toCalc[current -1] = toCalc[current - 1] + "0";
-    }
-    display();
-  }
 
   //========================================
   //INTEGERS
@@ -160,6 +158,11 @@ $(document).ready(function() {
     }
   });
 
+
+//========================================
+//SPECIAL CHARACTERS (negative sign, parentheses, backspace, decimal point)
+//========================================
+
   $('#negative').click(function(){
     if (isNaN(Number(toCalc[current]))) {
       current++;
@@ -182,31 +185,61 @@ $(document).ready(function() {
       }
     }
     console.log(toCalc);
-
     display();
   })
 
 
-
   $('#parentheses').click(function() {
-    if (parOpen) {
-      parOpen = false;
-      display("(");
-    } else {
-      parOpen = true;
-      display(")");
+    // if user selects parentheses immmediately after a calculation, start multiplication
+    if (phases.calcComplete) {
+      phases.calcComplete = false;
+      operate(' &times; ');
+      current++;
+      toCalc.push("( ");
+      phases.parHasBeenOpened = true;
+      phases.openParCount ++;
     }
+
+    // if after operator, push open parentheses
+    if (/&/.test(toCalc[current])) {
+      current++;
+      toCalc.push("( ")
+      phases.openParCount ++;
+    }
+
+    console.log(toCalc);
+    display();
   });
 
+
   $('#backspace').click(function() {
+    phases.calcComplete = false;
+    //if there is only one number left in the entire array, make it a zero
+    //if that number is already a zero, ABORT MISSION
+    if (toCalc[0] == "0" && current == 0){
+      return false;
+    } else if (toCalc[current].length == 1 && current === 0) {
+      toCalc[current] = "0";
+      display();
+      return false;
+    }
+
+    //if you delete a decimal point, make it so you can add one back in again
+    if (toCalc[current].substr(-1, 1) == ".") {
+      phases.decimal = true;
+    }
+
     //if current index is an HTML entity (an operator), remove the entire index
+    //and make it so you can't add another decimal point to the number before
+      //the operator, should a decimal point already exist
     if (/&/.test(toCalc[current])) {
+      if (/\./.test(toCalc[current-1])) {
+        phases.decimal = false;
+      }
       toCalc.pop();
       current--;
       phases.operator = true;
     } else {
-      //makeStr = toCalc[current].toString();
-      //newStr = makeStr.substring(0, makeStr.length - 1);
       toCalc[current] = toCalc[current].substring(0, toCalc[current].length - 1);
       if (toCalc[current] === "" && toCalc.length > 1){
         toCalc.pop();
@@ -214,32 +247,22 @@ $(document).ready(function() {
         phases.operator = false;
       }
     }
-    /*
-    //if current string does not terminate in a decimal point, convert to number
-    if (!/\./.test(toCalc[current])) {
-      toCalc[current] = Number(toCalc[current]);
-    }*/
+
     console.log(toCalc);
     display();
-
-    /*if (toCalc[current] === 0) {
-      toCacl.pop();
-      current--;
-      phases.operator = false;
-      console.log(toCalc);
-      display();
-    }*/
-
   });
+
 
   $('#point').click(function() {
     function loadDecimal() {
       console.log(current);
+      console.log(phases.decimal);
       if (isNaN(Number(toCalc[current])) && toCalc[current] != "-" && toCalc[current] != "") {
         current++;
       }
 
-      //if a calculation has been completed and the answer already has a decimal point, disable adding anothing decimal point
+      //if a calculation has been completed and the answer already has a
+        //decimal point, disable adding anothing decimal point
       if (phases.calcComplete) {
         if (/\./.test(toCalc[0].toString())) {
           phases.decimal = false;
@@ -248,7 +271,6 @@ $(document).ready(function() {
 
       if (phases.decimal) {
         if (toCalc[current] || toCalc[current] == "0") {
-          //toCalc[current].toString();
           toCalc[current] = toCalc[current] + ".";
         } else if (toCalc[current] == "-" || toCalc[current] == '') {
           toCalc[current] = toCalc[current] + "0."
@@ -256,7 +278,6 @@ $(document).ready(function() {
           toCalc.push("0.");
         }
       }
-      //Number(toCalc[current]);
       console.log(toCalc);
       display();
     }
@@ -270,38 +291,42 @@ $(document).ready(function() {
 //========================================
 //OPERATORS
 //========================================
+function operate(operator) {
+  //if there's already an operator in place, change that operator
+  if (!phases.operator) {
+    toCalc[current] = operator;
+  } else {
+    //if the number before the operator ends in a decimal point, add a zero at the end
+    if (/\.$/.test(toCalc[current])) {
+      toCalc[current] = toCalc[current] + "0";
+    }
+    current ++;
+    toCalc.push(operator);
+    phases.operator = false;
+    phases.decimal = true;
+  }
 
+  display();
+}
 
   $('#divide').click(function() {
     phases.calcComplete = false;
-    if(phases.operator) {
-      operate(' &divide; ');
-      //display(' &divide; ');
-    }
+    operate(' &divide; ');
   });
 
   $('#times').click(function() {
     phases.calcComplete = false;
-    if(phases.operator) {
-      operate(' &times; ');
-      //display(' &times; ');
-    }
+    operate(' &times; ');
   });
 
   $('#minus').click(function() {
     phases.calcComplete = false;
-    if(phases.operator) {
-      operate(' &minus; ');
-      //display(' &minus; ');
-    }
+    operate(' &minus; ');
   });
 
   $('#plus').click(function() {
     phases.calcComplete = false;
-    if(phases.operator) {
-      operate(' &plus; ');
-      //display(' &plus; ');
-    }
+    operate(' &plus; ');
   });
 
 
@@ -309,12 +334,10 @@ $(document).ready(function() {
   $('#equals').click(function() {
     if (phases.calculate) {
 
-      //join all arrays single-digit integers into larger numbers
-      //toCalc.map((i) => Array.isArray(toCalc[i]) ? toCalc[i] = toCalc[i].join('') : null);
       console.log(toCalc);
 
       //multiplication and division first by performing math on the indices
-      //behind and in front of the operator
+        //behind and in front of the operator
       for (i = 0; i < toCalc.length; i ++) {
         if (toCalc[i] === " &times; " || toCalc[i] === " &divide; ") {
           if (toCalc[i] === " &times; ") {
@@ -357,7 +380,7 @@ $(document).ready(function() {
       }
     }
 
-    var answer = parseFloat(untrimmed.join(''));
+    var answer = untrimmed.join('');
     $('#output').empty();
     toCalc = [answer];
     output = answer;
