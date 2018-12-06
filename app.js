@@ -207,6 +207,22 @@ $(document).ready(function() {
       phases.openParCount ++;
     }
 
+    //PSEUDOCODE INCOMING
+    /*
+    5 => 5, x, (
+    -, => -1, x, (
+    5, x => 5, x, (
+    5., => 5.0, x, (
+    5.5 => 5.5, x, (
+    (, 5 => (, 5, x, (         ----- parCount but no operator
+    (, 5, x => (, 5, x, (         -----parCount with operator only
+    (, 5, x, 5 => (, 5, x, 5, )   ---------parCount with operator and number
+    (, (, 5, x, 5, ) => (, (, 5, x, 5, ) -------parCount, prev is )
+    (, => ------parCount, prev is (
+    (, 5, x, 5, ) => (, 5, x, 5, ), x, ( ----------- !parCount, prev is )
+    (, (, 5, x, 5, ), x, 5 =>  ------------ parCount, prev is number
+    */
+    //END PSEUDOCODE
     console.log(toCalc);
     display();
   });
@@ -332,38 +348,69 @@ function operate(operator) {
 
 
   $('#equals').click(function() {
+
+    const operations = {
+      mainOperations: {
+        //math performed on indices in front of and behind the current (operator) index
+        add: function() {
+          toCalc[(i-1)] = parseFloat(toCalc[(i-1)]) + parseFloat(toCalc[(i+1)]);
+          toCalc.splice(i, 2);
+          i--;
+        },
+
+        subtract: function() {
+          toCalc[(i-1)] = toCalc[(i-1)] - toCalc[(i+1)];
+          toCalc.splice(i, 2);
+          i--;
+        },
+
+        multiply: function() {
+          toCalc[(i-1)] = toCalc[(i-1)] * toCalc[(i+1)];
+          toCalc.splice(i, 2);
+          i--;
+        },
+
+        divide: function() {
+          toCalc[(i-1)] = toCalc[(i-1)] / toCalc[(i+1)];
+          toCalc.splice(i, 2);
+          i--;
+        }
+      },
+
+      multiplyAndDivide: function() {
+        if (toCalc[i] === " &times; ") {
+          this.mainOperations.multiply();
+        } else if (toCalc[i] === " &divide; ") {
+          this.mainOperations.divide();
+        }
+      },
+
+      addAndSubtract: function() {
+        if (toCalc[i] === " &minus; ") {
+          this.mainOperations.subtract();
+        } else if (toCalc[i] === " &plus; ") {
+          this.mainOperations.add();
+        }
+      }
+    }
+
+
+
     if (phases.calculate) {
 
       console.log(toCalc);
 
-      //multiplication and division first by performing math on the indices
-        //behind and in front of the operator
+      //multiplication and division first
       for (i = 0; i < toCalc.length; i ++) {
         if (toCalc[i] === " &times; " || toCalc[i] === " &divide; ") {
-          if (toCalc[i] === " &times; ") {
-            toCalc[(i-1)] = toCalc[(i-1)] * toCalc[(i+1)];
-            toCalc.splice(i, 2);
-            i--;
-          } else if (toCalc[i] === " &divide; ") {
-            toCalc[(i-1)] = toCalc[(i-1)] / toCalc[(i+1)];
-            toCalc.splice(i, 2);
-            i--;
-          }
+          operations.multiplyAndDivide();
         }
       }
 
-      //after multipication and division are complete, addition and subtraction
+      //after multipication and division are complete, perform addition and subtraction
       for (i = 0; i < toCalc.length; i ++) {
         if (toCalc[i] === " &minus; " || toCalc[i] === " &plus; ") {
-          if (toCalc[i] === " &minus; ") {
-            toCalc[(i-1)] = toCalc[(i-1)] - toCalc[(i+1)];
-            toCalc.splice(i, 2);
-            i--;
-          } else if (toCalc[i] === " &plus; ") {
-            toCalc[(i-1)] = parseFloat(toCalc[(i-1)]) + parseFloat(toCalc[(i+1)]);
-            toCalc.splice(i, 2);
-            i--;
-          }
+          operations.addAndSubtract();
         }
       }
 
