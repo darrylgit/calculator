@@ -1,23 +1,27 @@
 $(document).ready(function() {
 
-
   var output = '0';
   var toCalc = [''];
 
-  var phases = {
+  let phases = {
     initial: true,
     operator: false,
     calculate: false,
     calcComplete: false,
     decimal: true,
     //parentheses
-    parHasBeenOpened: false,
-    parOperatorAdded: false,
-    parCanClose: false,
-    openParCount: 0,
-  }
+      //parHasBeenOpened: false,
+      //parOperatorAdded: false,
+      //parCanClose: false,
+    parCount: 0,
+  };
 
-  var current = 0;
+  let index = {
+    current: 0,
+    previous: function() {
+      return this.current - 1;
+    },
+  };
 
   $('#output').append(output);
 
@@ -26,7 +30,8 @@ $(document).ready(function() {
     output = "0";
     $('#output').append(output);
     toCalc = [''];
-    current = 0;
+    index.current = 0;
+    phases.parCount = 0;
     phases.calcComplete = false;
   }
 
@@ -42,7 +47,6 @@ $(document).ready(function() {
   }
 
   function load(value) {
-    console.log(phases.calcComplete);
     //if a calculation has just been performed, clear it and start a new array
     if (phases.calcComplete) {
       clear();
@@ -50,8 +54,10 @@ $(document).ready(function() {
 
     //if current index is NaN (i.e. if it's an operator), begin a new array
       //index UNLESS IT'S A NEGATIVE SIGN
-    if (toCalc[current] && isNaN(Number(toCalc[current])) && toCalc[current] != "-") {
-      current++;
+    if (toCalc[index.current] &&
+    isNaN(Number(toCalc[index.current])) &&
+    toCalc[index.current] != "-") {
+      index.current++;
       toCalc.push('');
     }
 
@@ -59,11 +65,13 @@ $(document).ready(function() {
 
     //if the current index is falsy (an empty string or zero), and it's also not
       //a negative sign or a decimal point it now equals value
-    if (!Number(toCalc[current]) && toCalc[current] != "-" && toCalc[current] != "0.") {
-      toCalc[current] = value;
+    if (!Number(toCalc[index.current]) &&
+    toCalc[index.current] != "-" &&
+    toCalc[index.current] != "0.") {
+      toCalc[index.current] = value;
     //otherwise, concatenate
     } else {
-      toCalc[current] = toCalc[current] + value;
+      toCalc[index.current] = toCalc[index.current] + value;
     }
 
     console.log(toCalc);
@@ -149,7 +157,7 @@ $(document).ready(function() {
   });
 
   $("#0").click(function() {
-    if (toCalc[current] != "0") {
+    if (toCalc[index.current] != "0") {
       phases.operator = true;
       load("0");
       if (toCalc.length > 2) {
@@ -164,23 +172,23 @@ $(document).ready(function() {
 //========================================
 
   $('#negative').click(function(){
-    if (isNaN(Number(toCalc[current]))) {
-      current++;
+    if (isNaN(Number(toCalc[index.current]))) {
+      index.current++;
     }
 
-    if (toCalc[current] != "0") {
-      if(!toCalc[current]) {
+    if (toCalc[index.current] != "0") {
+      if(!toCalc[index.current]) {
         load("-");
       } else {
         var negRegex = /^-/;
-        if (negRegex.test(toCalc[current])) {
-          toCalc[current] = toCalc[current].toString().split('');
-          toCalc[current].shift();
-          toCalc[current] = toCalc[current].join('');
+        if (negRegex.test(toCalc[index.current])) {
+          toCalc[index.current] = toCalc[index.current].toString().split('');
+          toCalc[index.current].shift();
+          toCalc[index.current] = toCalc[index.current].join('');
         } else {
-          toCalc[current] = toCalc[current].toString().split('');
-          toCalc[current].unshift("-");
-          toCalc[current] = toCalc[current].join('');
+          toCalc[index.current] = toCalc[index.current].toString().split('');
+          toCalc[index.current].unshift("-");
+          toCalc[index.current] = toCalc[index.current].join('');
         }
       }
     }
@@ -190,37 +198,145 @@ $(document).ready(function() {
 
 
   $('#parentheses').click(function() {
+
+    const pushPar = {
+      open: function() {
+        index.current++;
+        toCalc.push("( ");
+        phases.parCount++;
+      },
+
+      openMultiplication: function() {
+        operate(' &times; ');
+        index.current++;
+        toCalc.push("( ");
+        phases.parCount++;
+      },
+
+      close: function() {
+        index.current++;
+        toCalc.push(") ");
+        phases.parCount--;
+      },
+    }
+
     // if user selects parentheses immmediately after a calculation, start multiplication
     if (phases.calcComplete) {
       phases.calcComplete = false;
-      operate(' &times; ');
-      current++;
-      toCalc.push("( ");
-      phases.parHasBeenOpened = true;
-      phases.openParCount ++;
+      if (Number(toCalc[0]) != 0) {
+        pushPar.openMultiplication();
+    //... unless it's a zero, in which case, make that zero into parentheses
+      } else {
+        toCalc[0] = "( ";
+        phases.parCount++;
+        index.current++;
+      }
+      console.log(toCalc);
+      display();
+      return true;
+    }
+
+    let parBlockState = {
+      //states to be used in conditionals later on:
+      isEmpty: false,
+      hasNoOperator: false,
+      hasOperatorAndReagent: false,
+
+      //everything needed to determine those states:
+      currentParBlock: [],
+      findOperator: function() {
+        for (i = 0; i < this.currentParBlock.length; i++) {
+          if (/&/.test(this.currentParBlock[i])) {
+            return true;
+          }
+        }
+      },
+      assign: function() {
+        if (this.currentParBlock === ["( "]) {
+          this.isEmpty = true;
+        } else if (!this.findOperator()) {
+          this.hasNoOperator = true;
+        } else if (this.findOperator()) {
+          this.hasOperatorAndReagent = true;
+        }
+      },
+      scan: function() {
+        let openParIndices = [];
+        for (i = 0; i < toCalc.length; i++) {
+          if (toCalc[i] === "( ") {
+            openParIndices.push(i);
+          } else if (toCalc[i] === ") ") {
+            openParIndices.pop();
+          }
+        }
+
+        if (openParIndices) {
+          this.currentParBlock = toCalc.slice(openParIndices.pop());
+        }
+
+        this.assign();
+        console.log(this.currentParBlock);
+        console.log("isEmpty is " + this.isEmpty);
+        console.log("hasNoOperator is " + this.hasNoOperator);
+        console.log("hasOperatorAndReagent is " + this.hasOperatorAndReagent);
+      },
+    }
+
+    //now the fun part! If we're at the very beginning, just make open parentheses:
+    if (toCalc.length === 1 && toCalc[0] === "") {
+      toCalc[0] === "( ";
+      phases.parCount++;
+    //else, if the current index is a number:
+    } else if (!isNaN(Number(toCalc[index.current]))) {
+      //first, if there are no open parentheses
+      if (!phases.parCount) {
+        //if the number before the operator ends in a decimal point, add a zero at the end
+        if (/\.$/.test(toCalc[index.current])) {
+          toCalc[index.current] = toCalc[index.current] + "0";
+        }
+        pushPar.openMultiplication();
+      //but if there IS....
+      } else {
+        parBlockState.scan();
+        if (parBlockState.hasNoOperator) {
+          pushPar.openMultiplication();
+        } else if (parBlockState.hasOperatorAndReagent) {
+          pushPar.close();
+        }
+      }
+    } else if (toCalc[index.current] === "-") {
+      toCalc[index.current] = "-1";
+      pushPar.openMultiplication();
+    } else if (toCalc[index.current] === "( ") {
+      pushPar.openMultiplication();
     }
 
     // if after operator, push open parentheses
-    if (/&/.test(toCalc[current])) {
-      current++;
+    if (/&/.test(toCalc[index.current])) {
+      index.current++;
       toCalc.push("( ")
-      phases.openParCount ++;
+      phases.parCount ++;
     }
 
     //PSEUDOCODE INCOMING
     /*
-    5 => 5, x, (
-    -, => -1, x, (
-    5, x => 5, x, (
-    5., => 5.0, x, (
-    5.5 => 5.5, x, (
-    (, 5 => (, 5, x, (         ----- parCount but no operator
-    (, 5, x => (, 5, x, (         -----parCount with operator only
-    (, 5, x, 5 => (, 5, x, 5, )   ---------parCount with operator and number
-    (, (, 5, x, 5, ) => (, (, 5, x, 5, ) -------parCount, prev is )
-    (, => ------parCount, prev is (
-    (, 5, x, 5, ) => (, 5, x, 5, ), x, ( ----------- !parCount, prev is )
-    (, (, 5, x, 5, ), x, 5 =>  ------------ parCount, prev is number
+      most recent is number:
+        DONE: 5 => 5, x, (    [pushOpenMultiplication]
+        DONE: 5., => 5.0, x, (  [add zero, pushOpenMultiplication]
+        DONE:(, 5 => (, 5, x, (         ----- parCount but no operator
+        DONE: (, 5, x, 5 => (, 5, x, 5, )   ---------parCount with operator and number
+        DONE: (, (, 5, x, 5, ), x, 5 => (, (, 5, x, 5, ), x, 5, ) ------------ parCount, prev is number with operator
+      most recent is operator:
+        DONE: 5, x => 5, x, (
+      most recent is negative:
+        DONE: -, => -1, x, (
+      most recent is closed:
+        (, (, 5, x, 5, ) => (, (, 5, x, 5, ) -------parCount, prev is )
+        (, 5, x, 5, ) => (, 5, x, 5, ), x, ( ----------- !parCount, prev is )
+      most recent is open:
+        DONE: (, => (, x, ( ------parCount, prev is (
+      only index is zero:
+        0 => (
     */
     //END PSEUDOCODE
     console.log(toCalc);
@@ -232,34 +348,34 @@ $(document).ready(function() {
     phases.calcComplete = false;
     //if there is only one number left in the entire array, make it a zero
     //if that number is already a zero, ABORT MISSION
-    if (toCalc[0] == "0" && current == 0){
+    if (toCalc[0] == "0" && index.current == 0){
       return false;
-    } else if (toCalc[current].length == 1 && current === 0) {
-      toCalc[current] = "0";
+    } else if (toCalc[index.current].length == 1 && index.current === 0) {
+      toCalc[index.current] = "0";
       display();
       return false;
     }
 
     //if you delete a decimal point, make it so you can add one back in again
-    if (toCalc[current].substr(-1, 1) == ".") {
+    if (toCalc[index.current].substr(-1, 1) == ".") {
       phases.decimal = true;
     }
 
     //if current index is an HTML entity (an operator), remove the entire index
     //and make it so you can't add another decimal point to the number before
       //the operator, should a decimal point already exist
-    if (/&/.test(toCalc[current])) {
-      if (/\./.test(toCalc[current-1])) {
+    if (/&/.test(toCalc[index.current])) {
+      if (/\./.test(toCalc[index.previous()])) {
         phases.decimal = false;
       }
       toCalc.pop();
-      current--;
+      index.current--;
       phases.operator = true;
     } else {
-      toCalc[current] = toCalc[current].substring(0, toCalc[current].length - 1);
-      if (toCalc[current] === "" && toCalc.length > 1){
+      toCalc[index.current] = toCalc[index.current].substring(0, toCalc[index.current].length - 1);
+      if (toCalc[index.current] === "" && toCalc.length > 1){
         toCalc.pop();
-        current--;
+        index.current--;
         phases.operator = false;
       }
     }
@@ -271,10 +387,10 @@ $(document).ready(function() {
 
   $('#point').click(function() {
     function loadDecimal() {
-      console.log(current);
+      console.log(index.current);
       console.log(phases.decimal);
-      if (isNaN(Number(toCalc[current])) && toCalc[current] != "-" && toCalc[current] != "") {
-        current++;
+      if (isNaN(Number(toCalc[index.current])) && toCalc[index.current] != "-" && toCalc[index.current] != "") {
+        index.current++;
       }
 
       //if a calculation has been completed and the answer already has a
@@ -286,10 +402,10 @@ $(document).ready(function() {
       }
 
       if (phases.decimal) {
-        if (toCalc[current] || toCalc[current] == "0") {
-          toCalc[current] = toCalc[current] + ".";
-        } else if (toCalc[current] == "-" || toCalc[current] == '') {
-          toCalc[current] = toCalc[current] + "0."
+        if (toCalc[index.current] || toCalc[index.current] == "0") {
+          toCalc[index.current] = toCalc[index.current] + ".";
+        } else if (toCalc[index.current] == "-" || toCalc[index.current] == '') {
+          toCalc[index.current] = toCalc[index.current] + "0."
         } else {
           toCalc.push("0.");
         }
@@ -309,14 +425,14 @@ $(document).ready(function() {
 //========================================
 function operate(operator) {
   //if there's already an operator in place, change that operator
-  if (!phases.operator) {
-    toCalc[current] = operator;
-  } else {
+  if (!phases.operator && /&/.test(toCalc[index.current])) {
+    toCalc[index.current] = operator;
+  } else if (toCalc[index.current] !== "-") {
     //if the number before the operator ends in a decimal point, add a zero at the end
-    if (/\.$/.test(toCalc[current])) {
-      toCalc[current] = toCalc[current] + "0";
+    if (/\.$/.test(toCalc[index.current])) {
+      toCalc[index.current] = toCalc[index.current] + "0";
     }
-    current ++;
+    index.current ++;
     toCalc.push(operator);
     phases.operator = false;
     phases.decimal = true;
@@ -351,7 +467,7 @@ function operate(operator) {
 
     const operations = {
       mainOperations: {
-        //math performed on indices in front of and behind the current (operator) index
+        //math performed on indices in front of and behind the index.current (operator) index
         add: function() {
           toCalc[(i-1)] = parseFloat(toCalc[(i-1)]) + parseFloat(toCalc[(i+1)]);
           toCalc.splice(i, 2);
@@ -437,7 +553,7 @@ function operate(operator) {
     phases.decimal = true;
     phases.calcComplete = true;
     phases.calculate = false;
-    current = 0;
+    index.current = 0;
   }
 
 
