@@ -9,10 +9,6 @@ $(document).ready(function() {
     calculate: false,
     calcComplete: false,
     decimal: true,
-    //parentheses
-      //parHasBeenOpened: false,
-      //parOperatorAdded: false,
-      //parCanClose: false,
     parCount: 0,
   };
 
@@ -215,7 +211,7 @@ $(document).ready(function() {
 
       close: function() {
         index.current++;
-        toCalc.push(") ");
+        toCalc.push(" )");
         phases.parCount--;
       },
     }
@@ -238,53 +234,27 @@ $(document).ready(function() {
 
     let parBlockState = {
       //states to be used in conditionals later on:
-      isEmpty: false,
+
       hasNoOperator: false,
       hasOperatorAndReagent: false,
 
-      //everything needed to determine those states:
-      currentParBlock: [],
-      findOperator: function() {
-        for (i = 0; i < this.currentParBlock.length; i++) {
-          if (/&/.test(this.currentParBlock[i])) {
-            return true;
-          }
-        }
-      },
+      //determine states:
       assign: function() {
-        if (this.currentParBlock === ["( "]) {
-          this.isEmpty = true;
-        } else if (!this.findOperator()) {
-          this.hasNoOperator = true;
-        } else if (this.findOperator()) {
+        if (/&/.test(toCalc[index.previous()])) {
           this.hasOperatorAndReagent = true;
+        } else {
+          this.hasNoOperator = true;
         }
-      },
-      scan: function() {
-        let openParIndices = [];
-        for (i = 0; i < toCalc.length; i++) {
-          if (toCalc[i] === "( ") {
-            openParIndices.push(i);
-          } else if (toCalc[i] === ") ") {
-            openParIndices.pop();
-          }
-        }
-
-        if (openParIndices) {
-          this.currentParBlock = toCalc.slice(openParIndices.pop());
-        }
-
-        this.assign();
-        console.log(this.currentParBlock);
-        console.log("isEmpty is " + this.isEmpty);
         console.log("hasNoOperator is " + this.hasNoOperator);
         console.log("hasOperatorAndReagent is " + this.hasOperatorAndReagent);
       },
-    }
+
+    };
+
 
     //now the fun part! If we're at the very beginning, just make open parentheses:
     if (toCalc.length === 1 && toCalc[0] === "") {
-      toCalc[0] === "( ";
+      toCalc[0] = "( ";
       phases.parCount++;
     //else, if the current index is a number:
     } else if (!isNaN(Number(toCalc[index.current]))) {
@@ -297,7 +267,7 @@ $(document).ready(function() {
         pushPar.openMultiplication();
       //but if there IS....
       } else {
-        parBlockState.scan();
+        parBlockState.assign();
         if (parBlockState.hasNoOperator) {
           pushPar.openMultiplication();
         } else if (parBlockState.hasOperatorAndReagent) {
@@ -309,36 +279,20 @@ $(document).ready(function() {
       pushPar.openMultiplication();
     } else if (toCalc[index.current] === "( ") {
       pushPar.openMultiplication();
-    }
-
-    // if after operator, push open parentheses
-    if (/&/.test(toCalc[index.current])) {
+    } else if (/&/.test(toCalc[index.current])) {
       index.current++;
       toCalc.push("( ")
       phases.parCount ++;
+    } else if (toCalc[index.current] == " )") {
+      if (phases.parCount) {
+        pushPar.close()
+        phases.parCount--;
+      } else {
+        pushPar.openMultiplication();
+        phases.parCount++;
+      }
     }
 
-    //PSEUDOCODE INCOMING
-    /*
-      most recent is number:
-        DONE: 5 => 5, x, (    [pushOpenMultiplication]
-        DONE: 5., => 5.0, x, (  [add zero, pushOpenMultiplication]
-        DONE:(, 5 => (, 5, x, (         ----- parCount but no operator
-        DONE: (, 5, x, 5 => (, 5, x, 5, )   ---------parCount with operator and number
-        DONE: (, (, 5, x, 5, ), x, 5 => (, (, 5, x, 5, ), x, 5, ) ------------ parCount, prev is number with operator
-      most recent is operator:
-        DONE: 5, x => 5, x, (
-      most recent is negative:
-        DONE: -, => -1, x, (
-      most recent is closed:
-        (, (, 5, x, 5, ) => (, (, 5, x, 5, ) -------parCount, prev is )
-        (, 5, x, 5, ) => (, 5, x, 5, ), x, ( ----------- !parCount, prev is )
-      most recent is open:
-        DONE: (, => (, x, ( ------parCount, prev is (
-      only index is zero:
-        0 => (
-    */
-    //END PSEUDOCODE
     console.log(toCalc);
     display();
   });
@@ -530,33 +484,67 @@ function operate(operator) {
         }
       }
 
-    console.log(toCalc);
+      console.log(toCalc);
 
-    //Trim answer to seven decimal places and split each digit
-    var untrimmed = toCalc[0].toPrecision(7).toString().split('');
+      //Trim answer to seven decimal places and split each digit
+      var untrimmed = toCalc[0].toPrecision(7).toString().split('');
 
-    //Chop off any zeros at the end of the answer
-    function trim() {
-      if (untrimmed[(untrimmed.length-1)] === 0) {
-        untrimmed.splice(-1, 1);
-        trim();
+      //Chop off any zeros at the end of the answer
+      function trim() {
+        if (untrimmed[(untrimmed.length-1)] === 0) {
+          untrimmed.splice(-1, 1);
+          trim();
+        }
       }
+
+      var answer = untrimmed.join('');
+      $('#output').empty();
+      toCalc = [answer];
+      output = answer;
+
+      $('#output').append(output);
+      phases.operator = true;
+      phases.decimal = true;
+      phases.calcComplete = true;
+      phases.calculate = false;
+      index.current = 0;
     }
-
-    var answer = untrimmed.join('');
-    $('#output').empty();
-    toCalc = [answer];
-    output = answer;
-
-    $('#output').append(output);
-    phases.operator = true;
-    phases.decimal = true;
-    phases.calcComplete = true;
-    phases.calculate = false;
-    index.current = 0;
-  }
 
 
   });
 
 });
+
+/*parBlockState legacy code (probably unnecessary, but just in case I'm wrong...)
+isEmpty: false,
+currentParBlock: [],
+findOperator: function() {
+  for (i = 0; i < this.currentParBlock.length; i++) {
+    if (/&/.test(this.currentParBlock[i])) {
+      return true;
+    }
+  }
+},
+
+if (this.currentParBlock === ["( "]) {
+  this.isEmpty = true;
+} else if (!this.findOperator()) {
+  this.hasNoOperator = true;
+} else if (this.findOperator()) {
+  this.hasOperatorAndReagent = true;
+}
+},
+scan: function() {
+let openParIndices = [];
+for (i = 0; i < toCalc.length; i++) {
+  if (toCalc[i] === "( ") {
+    openParIndices.push(i);
+  } else if (toCalc[i] === ") ") {
+    openParIndices.pop();
+  }
+}
+
+if (openParIndices) {
+  this.currentParBlock = toCalc.slice(openParIndices.pop());
+}
+*/
