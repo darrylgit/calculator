@@ -332,11 +332,11 @@ $(document).ready(function() {
     //if there is only one number left in the entire array, make it a zero
     //if that number is already a zero, ABORT MISSION
     if (toCalc[0] == "0" && index.current == 0){
-      return false;
+      return true;
     } else if (toCalc[index.current].length == 1 && index.current === 0) {
       toCalc[index.current] = "0";
       display();
-      return false;
+      return true;
     }
 
     //if user deletes a decimal point, make it so you can add one back in again
