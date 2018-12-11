@@ -21,3 +21,18 @@
 #clear {
   color: white;
 }
+
+.unclosed-par {
+  animation-duration: 2s;
+  animation-name: flash;
+}
+
+@keyframes flash {
+  from {
+    color: red;
+  }
+
+  to {
+    color: black;
+  }
+}

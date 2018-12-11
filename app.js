@@ -37,9 +37,21 @@ $(document).ready(function() {
   });
 
 
+  var toCalcForDisplay = [];
   function display() {
     $('#output').empty();
-    $('#output').append(toCalc.join(''));
+
+    toCalcForDisplay = [...toCalc];
+
+    (function trimMultiplication(){
+      for (i = 0; i < toCalcForDisplay.length; i++) {
+        if (toCalcForDisplay[i] === " &times; " && toCalcForDisplay[i + 1] === "( ") {
+          toCalcForDisplay[i] = " ";
+        }
+      }
+    })();
+
+    $('#output').append(toCalcForDisplay.join(''));
   }
 
   function load(value) {
@@ -192,6 +204,14 @@ $(document).ready(function() {
     display();
   })
 
+  /*the parentheses and backspace functions need to track how many unclosed parentheses
+  there are. They'll both use this function:*/
+  var equalsToggle = function() {
+    var equalsEntity = '&equals;';
+    $('#equals').text(function (i, equalsEntity) {
+      return phases.parCount ? "))" : "=";
+    })
+  }
 
   $('#parentheses').click(function() {
 
@@ -200,6 +220,7 @@ $(document).ready(function() {
         index.current++;
         toCalc.push("( ");
         phases.parCount++;
+        phases.operator = false;
       },
 
       openMultiplication: function() {
@@ -207,12 +228,14 @@ $(document).ready(function() {
         index.current++;
         toCalc.push("( ");
         phases.parCount++;
+        phases.operator = false;
       },
 
       close: function() {
         index.current++;
         toCalc.push(" )");
         phases.parCount--;
+        phases.operator = true;
       },
     }
 
@@ -278,7 +301,7 @@ $(document).ready(function() {
       toCalc[index.current] = "-1";
       pushPar.openMultiplication();
     } else if (toCalc[index.current] === "( ") {
-      pushPar.openMultiplication();
+      pushPar.open();
     } else if (/&/.test(toCalc[index.current])) {
       index.current++;
       toCalc.push("( ")
@@ -292,6 +315,12 @@ $(document).ready(function() {
         phases.parCount++;
       }
     }
+
+    //if there are unclosed parentheses, change the equals button
+
+    console.log(phases.parCount);
+    equalsToggle();
+
 
     console.log(toCalc);
     display();
@@ -310,9 +339,35 @@ $(document).ready(function() {
       return false;
     }
 
-    //if you delete a decimal point, make it so you can add one back in again
+    //if user deletes a decimal point, make it so you can add one back in again
     if (toCalc[index.current].substr(-1, 1) == ".") {
       phases.decimal = true;
+    }
+
+    /*if the current index is a parenthesis, remove the entire index, set parCount
+    accordingly*/
+    if (/\(/.test(toCalc[index.current])) {
+      toCalc.pop();
+      index.current--;
+      phases.parCount--;
+      equalsToggle();
+      if (/times/.test(toCalc[index.current])) {
+        toCalc.pop()
+        index.current--;
+        phases.operator = true;
+      }
+      display();
+      return true;
+    } else if (/\)/.test(toCalc[index.current])) {
+      toCalc.pop();
+      index.current--;
+      phases.parCount++;
+      equalsToggle();
+      if (/\./.test(toCalc[index.previous()])) {
+        phases.decimal = false;
+      }
+      display();
+      return true;
     }
 
     //if current index is an HTML entity (an operator), remove the entire index
@@ -333,6 +388,7 @@ $(document).ready(function() {
         phases.operator = false;
       }
     }
+
 
     console.log(toCalc);
     display();
@@ -379,9 +435,10 @@ $(document).ready(function() {
 //========================================
 function operate(operator) {
   //if there's already an operator in place, change that operator
+  console.log(phases.operator);
   if (!phases.operator && /&/.test(toCalc[index.current])) {
     toCalc[index.current] = operator;
-  } else if (toCalc[index.current] !== "-") {
+  } else if (phases.operator && toCalc[index.current] !== "-") {
     //if the number before the operator ends in a decimal point, add a zero at the end
     if (/\.$/.test(toCalc[index.current])) {
       toCalc[index.current] = toCalc[index.current] + "0";
@@ -464,9 +521,39 @@ function operate(operator) {
       }
     }
 
+    function flashParentheses() {
+
+      let openParIndices = [];
+      (function scanForUnclosed() {
+        for (i = 0; i < toCalcForDisplay.length; i++) {
+          if (toCalc[i] === "( ") {
+            openParIndices.push(i);
+          } else if (toCalc[i] === " )") {
+            console.log("Popping!");
+            openParIndices.pop();
+          }
+        }
+      })();
+
+      console.log("Indices are " + [...openParIndices]);
+
+      openParIndices.forEach(function(index) {
+        toCalcForDisplay[index] = "<span class='unclosed-par'>" + toCalcForDisplay[index] + "</span>";
+      })
+
+      console.log("Flash this!");
+      console.log(toCalcForDisplay);
+
+      $('#output').empty();
+      $('#output').append(toCalcForDisplay.join(''));
+
+    }
 
 
-    if (phases.calculate) {
+
+    if (phases.parCount) {
+      flashParentheses();
+    } else if (phases.calculate) {
 
       console.log(toCalc);
 
@@ -546,5 +633,39 @@ for (i = 0; i < toCalc.length; i++) {
 
 if (openParIndices) {
   this.currentParBlock = toCalc.slice(openParIndices.pop());
+}
+*/
+
+/*
+function closeParAutoComplete() {
+
+  let parBlockState = {
+    //states to be used in conditionals later on:
+
+    hasNoOperator: false,
+    hasOperatorAndReagent: false,
+
+    //determine states:
+    assign: function() {
+      if (/&/.test(toCalc[index.previous()])) {
+        this.hasOperatorAndReagent = true;
+      } else {
+        this.hasNoOperator = true;
+      }
+      console.log("hasNoOperator is " + this.hasNoOperator);
+      console.log("hasOperatorAndReagent is " + this.hasOperatorAndReagent);
+    },
+  };
+  parBlockState.assign();
+  if(parBlockState.hasOperatorAndReagent){
+    while (phases.parCount) {
+      index.current++;
+      toCalc.push(" )");
+      phases.parCount--;
+      phases.operator = true;
+      equalsToggle();
+      display();
+    }
+  }
 }
 */
