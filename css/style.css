@@ -3,11 +3,16 @@
   border: 2px solid blue;
   border-radius: 10px;
   background-color: #b3c6ff;
+  -webkit-transform: scale(1.0);
 }
 
 #output {
   background-color: white;
   border-radius: 3px;
+  font-size: 16px;
+  text-rendering: geometricPrecision;
+  -webkit-transform: scale(1.0);
+
 }
 
 .col {
@@ -22,17 +27,27 @@
   color: white;
 }
 
+.initial {
+  color: white;
+}
+
 .unclosed-par {
-  animation-duration: 2s;
+  display: inline-block;
+  margin-right: 0.25px;
+  animation-duration: 0.25s;
   animation-name: flash;
+  animation-timing-function: ease-in;
+
 }
 
 @keyframes flash {
   from {
+    -webkit-transform: scale(1.5);
     color: red;
   }
 
   to {
+    -webkit-transform: scale(1.0);
     color: black;
   }
 }

@@ -1,11 +1,12 @@
 $(document).ready(function() {
 
-  var output = '0';
-  var toCalc = [''];
+  var init = "<span class='initial'>N</span>"
+  var output = init;
+  var toCalc = [init];
 
   let phases = {
     initial: true,
-    operator: false,
+    operator: true,
     calculate: false,
     calcComplete: false,
     decimal: true,
@@ -41,7 +42,14 @@ $(document).ready(function() {
   function display() {
     $('#output').empty();
 
+
     toCalcForDisplay = [...toCalc];
+    if (toCalcForDisplay.length === 1 && toCalcForDisplay[0] === "") {
+      toCalcForDisplay = ["0"];
+      toCalc = ["0"];
+      phases.operator = true;
+    }
+
 
     (function trimMultiplication(){
       for (i = 0; i < toCalcForDisplay.length; i++) {
@@ -318,7 +326,7 @@ $(document).ready(function() {
 
     //if there are unclosed parentheses, change the equals button
 
-    console.log(phases.parCount);
+    //console.log(phases.parCount);
     equalsToggle();
 
 
@@ -350,6 +358,7 @@ $(document).ready(function() {
       toCalc.pop();
       index.current--;
       phases.parCount--;
+      console.log("parCount after deletion is " + phases.parCount);
       equalsToggle();
       if (/times/.test(toCalc[index.current])) {
         toCalc.pop()
@@ -362,6 +371,7 @@ $(document).ready(function() {
       toCalc.pop();
       index.current--;
       phases.parCount++;
+      console.log("parCount after deletion is " + phases.parCount);
       equalsToggle();
       if (/\./.test(toCalc[index.previous()])) {
         phases.decimal = false;
@@ -397,8 +407,8 @@ $(document).ready(function() {
 
   $('#point').click(function() {
     function loadDecimal() {
-      console.log(index.current);
-      console.log(phases.decimal);
+      //console.log(index.current);
+      //console.log(phases.decimal);
       if (isNaN(Number(toCalc[index.current])) && toCalc[index.current] != "-" && toCalc[index.current] != "") {
         index.current++;
       }
@@ -435,7 +445,7 @@ $(document).ready(function() {
 //========================================
 function operate(operator) {
   //if there's already an operator in place, change that operator
-  console.log(phases.operator);
+  //console.log(phases.operator);
   if (!phases.operator && /&/.test(toCalc[index.current])) {
     toCalc[index.current] = operator;
   } else if (phases.operator && toCalc[index.current] !== "-") {
@@ -529,23 +539,45 @@ function operate(operator) {
           if (toCalc[i] === "( ") {
             openParIndices.push(i);
           } else if (toCalc[i] === " )") {
-            console.log("Popping!");
+            //console.log("Popping!");
             openParIndices.pop();
           }
         }
       })();
 
-      console.log("Indices are " + [...openParIndices]);
+      //console.log("Indices are " + [...openParIndices]);
 
       openParIndices.forEach(function(index) {
         toCalcForDisplay[index] = "<span class='unclosed-par'>" + toCalcForDisplay[index] + "</span>";
+        /*the inline-block display necessary collapses the space after the parenthesis,
+        so add in another*/
+        if (toCalcForDisplay[index + 1] !== " ") {
+          toCalcForDisplay.splice(index + 1, 0, " ");
+        }
       })
 
-      console.log("Flash this!");
+      //console.log("Flash this!");
       console.log(toCalcForDisplay);
 
       $('#output').empty();
       $('#output').append(toCalcForDisplay.join(''));
+
+      /*toCalcForDisplay.forEach(function(index) {
+        console.log(toCalcForDisplay[index]);
+        if (toCalcForDisplay[index] === "<span class='unclosed-par'>( </span>") {
+          console.log("Found one!");
+          toCalcForDisplay[index] = "( ";
+        }*/
+
+      for (i = 0; i < toCalcForDisplay.length; i++) {
+        if (toCalcForDisplay[i] === "<span class='unclosed-par'>( </span>") {
+          toCalcForDisplay[i] = "( ";
+          console.log(toCalcForDisplay);
+          //display();
+        }
+      }
+
+
 
     }
 
