@@ -1,12 +1,12 @@
 $(document).ready(function() {
 
-  var init = "<span class='initial'>N</span>"
+  var init = "<span class='initial'>Enter a number...</span>"
   var output = init;
-  var toCalc = [init];
+  var toCalc = [""];
 
   let phases = {
     initial: true,
-    operator: true,
+    operator: false,
     calculate: false,
     calcComplete: false,
     decimal: true,
@@ -24,17 +24,22 @@ $(document).ready(function() {
 
   function clear() {
     $('#output').empty();
-    output = "0";
+    output = init;
     $('#output').append(output);
-    toCalc = [''];
+    toCalc = [""];
     index.current = 0;
     phases.parCount = 0;
     phases.calcComplete = false;
   }
 
-  $('#clear').click(function() {
+  function clearAll(){
     clear();
     phases.operator = false;
+    phases.initial = true;
+  }
+
+  $('#clear').click(function() {
+    clearAll();
   });
 
 
@@ -45,9 +50,10 @@ $(document).ready(function() {
 
     toCalcForDisplay = [...toCalc];
     if (toCalcForDisplay.length === 1 && toCalcForDisplay[0] === "") {
-      toCalcForDisplay = ["0"];
-      toCalc = ["0"];
+      toCalcForDisplay = [init];
+      toCalc = [""];
       phases.operator = true;
+      phases.initial = true;
     }
 
 
@@ -63,32 +69,38 @@ $(document).ready(function() {
   }
 
   function load(value) {
+    phases.initial = false;
+
     //if a calculation has just been performed, clear it and start a new array
     if (phases.calcComplete) {
       clear();
     }
 
-    //if current index is NaN (i.e. if it's an operator), begin a new array
-      //index UNLESS IT'S A NEGATIVE SIGN
+    //if the current index is NaN (i.e. if it's an operator), begin a new array index...
+      //... UNLESS IT'S A NEGATIVE SIGN
     if (toCalc[index.current] &&
-    isNaN(Number(toCalc[index.current])) &&
-    toCalc[index.current] != "-") {
-      index.current++;
-      toCalc.push('');
-    }
+        isNaN(Number(toCalc[index.current])) &&
+        toCalc[index.current] != "-") {
+
+          index.current++;
+          toCalc.push('');
+
+          }
 
     console.log(toCalc);
 
-    //if the current index is falsy (an empty string or zero), and it's also not
-      //a negative sign or a decimal point it now equals value
+    //if the current index is falsy (an empty string or zero), and it's also not...
+      //... a negative sign or a decimal point, it now equals value
     if (!Number(toCalc[index.current]) &&
-    toCalc[index.current] != "-" &&
-    toCalc[index.current] != "0.") {
-      toCalc[index.current] = value;
-    //otherwise, concatenate
-    } else {
-      toCalc[index.current] = toCalc[index.current] + value;
-    }
+        toCalc[index.current] != "-" &&
+        toCalc[index.current] != "0.") {
+
+          toCalc[index.current] = value;
+
+          //otherwise, concatenate:
+      } else {
+          toCalc[index.current] = toCalc[index.current] + value;
+      }
 
     console.log(toCalc);
 
@@ -188,26 +200,47 @@ $(document).ready(function() {
 //========================================
 
   $('#negative').click(function(){
+
+    //the the current index in an operator or parentheses, prepare to insert the...
+      // ... negative sign at the next array index
     if (isNaN(Number(toCalc[index.current]))) {
       index.current++;
     }
 
+    function addOrRemoveNegative() {
+
+      function addNegative() {
+        toCalc[index.current] = toCalc[index.current].toString().split('');
+        toCalc[index.current].unshift("-");
+        toCalc[index.current] = toCalc[index.current].join('');
+      }
+
+      function removeNegative() {
+        toCalc[index.current] = toCalc[index.current].toString().split('');
+        toCalc[index.current].shift();
+        toCalc[index.current] = toCalc[index.current].join('');
+      }
+
+      let currentIndexIsNegative = /^-/.test(toCalc[index.current]);
+
+      if (currentIndexIsNegative) {
+        removeNegative();
+      } else {
+        addNegative();
+      }
+    }
+
+    //don't add a negative sign to a zero
     if (toCalc[index.current] != "0") {
+
+      //if there's nothing in this index, just add the negative sign
       if(!toCalc[index.current]) {
         load("-");
       } else {
-        var negRegex = /^-/;
-        if (negRegex.test(toCalc[index.current])) {
-          toCalc[index.current] = toCalc[index.current].toString().split('');
-          toCalc[index.current].shift();
-          toCalc[index.current] = toCalc[index.current].join('');
-        } else {
-          toCalc[index.current] = toCalc[index.current].toString().split('');
-          toCalc[index.current].unshift("-");
-          toCalc[index.current] = toCalc[index.current].join('');
-        }
+        addOrRemoveNegative();
       }
     }
+
     console.log(toCalc);
     display();
   })
@@ -217,7 +250,7 @@ $(document).ready(function() {
   var equalsToggle = function() {
     var equalsEntity = '&equals;';
     $('#equals').text(function (i, equalsEntity) {
-      return phases.parCount ? "))" : "=";
+      return phases.parCount ? ") !" : "=";
     })
   }
 
@@ -296,7 +329,7 @@ $(document).ready(function() {
           toCalc[index.current] = toCalc[index.current] + "0";
         }
         pushPar.openMultiplication();
-      //but if there IS....
+      //but if there ARE open parentheses....
       } else {
         parBlockState.assign();
         if (parBlockState.hasNoOperator) {
@@ -329,7 +362,7 @@ $(document).ready(function() {
     //console.log(phases.parCount);
     equalsToggle();
 
-
+    console.log("parCount is " + phases.parCount);
     console.log(toCalc);
     display();
   });
@@ -380,9 +413,9 @@ $(document).ready(function() {
       return true;
     }
 
-    //if current index is an HTML entity (an operator), remove the entire index
-    //and make it so you can't add another decimal point to the number before
-      //the operator, should a decimal point already exist
+    //If the current index is an HTML entity (an operator), remove the entire index...
+      //... and make it so you can't add another decimal point to the number before...
+      //.. the operator, should a decimal point already exist.
     if (/&/.test(toCalc[index.current])) {
       if (/\./.test(toCalc[index.previous()])) {
         phases.decimal = false;
@@ -545,18 +578,37 @@ function operate(operator) {
         }
       })();
 
-      //console.log("Indices are " + [...openParIndices]);
 
+      for (let i = 0; i < toCalcForDisplay.length; i++) {
+
+        if (openParIndices.includes(i)) {
+          toCalcForDisplay[i] = "<span class='unclosed-par'>" + toCalcForDisplay[i] + "</span>";
+          /*the inline-block display collapses the space after the parenthesis,
+          so add in another*/
+
+          if (toCalcForDisplay[i + 1] !== " ") {
+            toCalcForDisplay.splice(i + 1, 0, " ");
+
+            //adding that space invalidates all the other indices, so add one to all indices
+            //(the openParIndices gets reset each time flashParentheses runs, so we can use Array.map)
+            openParIndices = openParIndices.map(index => index +1);
+            i++; //to prevent infinite loop!!!!
+          }
+
+        }
+      }
+      /*
       openParIndices.forEach(function(index) {
         toCalcForDisplay[index] = "<span class='unclosed-par'>" + toCalcForDisplay[index] + "</span>";
-        /*the inline-block display necessary collapses the space after the parenthesis,
-        so add in another*/
+
         if (toCalcForDisplay[index + 1] !== " ") {
           toCalcForDisplay.splice(index + 1, 0, " ");
-        }
-      })
 
-      //console.log("Flash this!");
+          openParIndices = openParIndices.map(i => i +1);
+        }
+
+      })*/
+
       console.log(toCalcForDisplay);
 
       $('#output').empty();
@@ -569,16 +621,14 @@ function operate(operator) {
           toCalcForDisplay[index] = "( ";
         }*/
 
-      for (i = 0; i < toCalcForDisplay.length; i++) {
+      for (let i = 0; i < toCalcForDisplay.length; i++) {
         if (toCalcForDisplay[i] === "<span class='unclosed-par'>( </span>") {
           toCalcForDisplay[i] = "( ";
+          toCalcForDisplay.splice(i + 1, 1);
           console.log(toCalcForDisplay);
           //display();
         }
       }
-
-
-
     }
 
 
