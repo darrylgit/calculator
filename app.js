@@ -275,8 +275,10 @@ $(document).ready(function() {
       close: function() {
         index.current++;
         toCalc.push(" )");
+        console.log("Closed at parCount" + phases.parCount)
         phases.parCount--;
         phases.operator = true;
+
       },
     }
 
@@ -335,6 +337,7 @@ $(document).ready(function() {
         if (parBlockState.hasNoOperator) {
           pushPar.openMultiplication();
         } else if (parBlockState.hasOperatorAndReagent) {
+          console.log('hasOperatorAndReagent, so close');
           pushPar.close();
         }
       }
@@ -349,11 +352,9 @@ $(document).ready(function() {
       phases.parCount ++;
     } else if (toCalc[index.current] == " )") {
       if (phases.parCount) {
-        pushPar.close()
-        phases.parCount--;
+        pushPar.close();
       } else {
         pushPar.openMultiplication();
-        phases.parCount++;
       }
     }
 
