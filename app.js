@@ -590,40 +590,45 @@ function operate(operator) {
       //var start = 0;
       //var end = -1;
 
-      function determineBlockForEvaluation() {
-        var parExists = false;
-        (function scanForClosingPar() {
-          for (let i = 0; i < toCalc.length; i++) {
-            if (toCalc[i] === " )") {
-              end = i;
-              parExists = true;
-              return true;
-            }
-          }
-        })();
 
-        //console.log(end);
-        if (parExists) {
-          (function findCorrespondingOpenPar() {
-            for (i = end; i > -1; i--) {
-              if (toCalc[i] === "( ") {
-                start = i;
-                return true;
-              }
-            }
-          })();
-        }
-        //console.log(start);
-
-      }
 
       //determineBlockForEvaluation();
 
       function evaluateByBlock() {
         var start = 0;
         var end = toCalc.length;
+        function determineBlockForEvaluation() {
+          console.log(start)
+          console.log(end)
+          var parExists = false;
+          (function scanForClosingPar() {
+            for (let i = 0; i < toCalc.length; i++) {
+              if (toCalc[i] === " )") {
+                end = i;
+                parExists = true;
+                return true;
+              }
+            }
+          })();
+
+          //console.log(end);
+          if (parExists) {
+            (function findCorrespondingOpenPar() {
+              for (i = end; i > -1; i--) {
+                if (toCalc[i] === "( ") {
+                  start = i + 1;
+                  return true;
+                }
+              }
+            })();
+          }
+          console.log(start);
+          console.log(end);
+
+        }
         determineBlockForEvaluation();
         var block = toCalc.slice(start, end);
+        console.log("Block is:")
         console.log(block);
 
         function evaluate() {
@@ -636,19 +641,19 @@ function operate(operator) {
                 i--;
               },
 
-              subtract: function(block) {
+              subtract: function() {
                 block[(i-1)] = block[(i-1)] - block[(i+1)];
                 block.splice(i, 2);
                 i--;
               },
 
-              multiply: function(block) {
+              multiply: function() {
                 block[(i-1)] = block[(i-1)] * block[(i+1)];
                 block.splice(i, 2);
                 i--;
               },
 
-              divide: function(block) {
+              divide: function() {
                 block[(i-1)] = block[(i-1)] / block[(i+1)];
                 block.splice(i, 2);
                 i--;
@@ -689,6 +694,11 @@ function operate(operator) {
         evaluate();
         toCalc[start] = block[0];
         toCalc.splice(start + 1, block.length);
+        if (toCalc[start - 1] === "( ") {
+          toCalc.splice(start - 1, 1);
+        }
+        console.log("toCalc at end of evaluateByBlock is:");
+        console.log(toCalc);
       }
 
 
@@ -699,7 +709,7 @@ function operate(operator) {
       function evaluationManager() {
         if (toCalc.length > 1) {
           evaluateByBlock();
-          console.log(toCalc);
+          //console.log(toCalc);
           evaluationManager();
         } else {
           calculated = toCalc;
