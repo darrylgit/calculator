@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  var init = "<span class='initial'>Enter a number...</span>"
+  var init = "<span class='initial'>Enter a number to begin</span>"
   var output = init;
   var toCalc = [""];
 
@@ -245,14 +245,16 @@ $(document).ready(function() {
     display();
   })
 
+
   /*the parentheses and backspace functions need to track how many unclosed parentheses
-  there are. They'll both use this function:*/
+  there are. They'll both use this function.*/
   var equalsToggle = function() {
     var equalsEntity = '&equals;';
     $('#equals').text(function (i, equalsEntity) {
       return phases.parCount ? ") !" : "=";
     })
   }
+
 
   $('#parentheses').click(function() {
 
@@ -477,6 +479,7 @@ $(document).ready(function() {
 //========================================
 //OPERATORS
 //========================================
+
 function operate(operator) {
   //if there's already an operator in place, change that operator
   //console.log(phases.operator);
@@ -491,6 +494,7 @@ function operate(operator) {
     toCalc.push(operator);
     phases.operator = false;
     phases.decimal = true;
+    phases.initial = false;
   }
 
   display();
@@ -517,117 +521,57 @@ function operate(operator) {
   });
 
 
+//========================================
+//CALCULATE
+//========================================
 
   $('#equals').click(function() {
 
-    const operations = {
-      mainOperations: {
-        //math performed on indices in front of and behind the index.current (operator) index
-        add: function() {
-          toCalc[(i-1)] = parseFloat(toCalc[(i-1)]) + parseFloat(toCalc[(i+1)]);
-          toCalc.splice(i, 2);
-          i--;
-        },
-
-        subtract: function() {
-          toCalc[(i-1)] = toCalc[(i-1)] - toCalc[(i+1)];
-          toCalc.splice(i, 2);
-          i--;
-        },
-
-        multiply: function() {
-          toCalc[(i-1)] = toCalc[(i-1)] * toCalc[(i+1)];
-          toCalc.splice(i, 2);
-          i--;
-        },
-
-        divide: function() {
-          toCalc[(i-1)] = toCalc[(i-1)] / toCalc[(i+1)];
-          toCalc.splice(i, 2);
-          i--;
-        }
-      },
-
-      multiplyAndDivide: function() {
-        if (toCalc[i] === " &times; ") {
-          this.mainOperations.multiply();
-        } else if (toCalc[i] === " &divide; ") {
-          this.mainOperations.divide();
-        }
-      },
-
-      addAndSubtract: function() {
-        if (toCalc[i] === " &minus; ") {
-          this.mainOperations.subtract();
-        } else if (toCalc[i] === " &plus; ") {
-          this.mainOperations.add();
-        }
-      }
-    }
 
     function flashParentheses() {
 
-      let openParIndices = [];
+      //determine the indices of unclosed parentheses
+      let unclosedParIndices = [];
       (function scanForUnclosed() {
         for (i = 0; i < toCalcForDisplay.length; i++) {
           if (toCalc[i] === "( ") {
-            openParIndices.push(i);
+            unclosedParIndices.push(i);
           } else if (toCalc[i] === " )") {
-            //console.log("Popping!");
-            openParIndices.pop();
+            unclosedParIndices.pop();
           }
         }
       })();
 
-
+      //add class 'unclosed-par' (the "flash") to each open parenthesis
       for (let i = 0; i < toCalcForDisplay.length; i++) {
-
-        if (openParIndices.includes(i)) {
+        if (unclosedParIndices.includes(i)) {
           toCalcForDisplay[i] = "<span class='unclosed-par'>" + toCalcForDisplay[i] + "</span>";
+
           /*the inline-block display collapses the space after the parenthesis,
           so add in another*/
-
           if (toCalcForDisplay[i + 1] !== " ") {
             toCalcForDisplay.splice(i + 1, 0, " ");
 
-            //adding that space invalidates all the other indices, so add one to all indices
-            //(the openParIndices gets reset each time flashParentheses runs, so we can use Array.map)
-            openParIndices = openParIndices.map(index => index +1);
-            i++; //to prevent infinite loop!!!!
+            //adding that space invalidates all the other indices, so add one to each index
+            unclosedParIndices = unclosedParIndices.map(index => index +1);
+            i++; //to prevent infinite loop
           }
-
         }
       }
-      /*
-      openParIndices.forEach(function(index) {
-        toCalcForDisplay[index] = "<span class='unclosed-par'>" + toCalcForDisplay[index] + "</span>";
-
-        if (toCalcForDisplay[index + 1] !== " ") {
-          toCalcForDisplay.splice(index + 1, 0, " ");
-
-          openParIndices = openParIndices.map(i => i +1);
-        }
-
-      })*/
 
       console.log(toCalcForDisplay);
 
+      //skelton of a display function:
       $('#output').empty();
       $('#output').append(toCalcForDisplay.join(''));
 
-      /*toCalcForDisplay.forEach(function(index) {
-        console.log(toCalcForDisplay[index]);
-        if (toCalcForDisplay[index] === "<span class='unclosed-par'>( </span>") {
-          console.log("Found one!");
-          toCalcForDisplay[index] = "( ";
-        }*/
-
+      /*change everything back to normal (but don't display it just yet-- we want
+      our animation to finish playing first)*/
       for (let i = 0; i < toCalcForDisplay.length; i++) {
         if (toCalcForDisplay[i] === "<span class='unclosed-par'>( </span>") {
           toCalcForDisplay[i] = "( ";
           toCalcForDisplay.splice(i + 1, 1);
           console.log(toCalcForDisplay);
-          //display();
         }
       }
     }
@@ -636,28 +580,139 @@ function operate(operator) {
 
     if (phases.parCount) {
       flashParentheses();
+
     } else if (phases.calculate) {
 
+
+
       console.log(toCalc);
 
-      //multiplication and division first
-      for (i = 0; i < toCalc.length; i ++) {
-        if (toCalc[i] === " &times; " || toCalc[i] === " &divide; ") {
-          operations.multiplyAndDivide();
+      //var start = 0;
+      //var end = -1;
+
+      function determineBlockForEvaluation() {
+        var parExists = false;
+        (function scanForClosingPar() {
+          for (let i = 0; i < toCalc.length; i++) {
+            if (toCalc[i] === " )") {
+              end = i;
+              parExists = true;
+              return true;
+            }
+          }
+        })();
+
+        //console.log(end);
+        if (parExists) {
+          (function findCorrespondingOpenPar() {
+            for (i = end; i > -1; i--) {
+              if (toCalc[i] === "( ") {
+                start = i;
+                return true;
+              }
+            }
+          })();
+        }
+        //console.log(start);
+
+      }
+
+      //determineBlockForEvaluation();
+
+      function evaluateByBlock() {
+        var start = 0;
+        var end = toCalc.length;
+        determineBlockForEvaluation();
+        var block = toCalc.slice(start, end);
+        console.log(block);
+
+        function evaluate() {
+          const operations = {
+            mainOperations: {
+              //math performed on indices in front of and behind the index.current (operator) index
+              add: function() {
+                block[(i-1)] = parseFloat(block[(i-1)]) + parseFloat(block[(i+1)]);
+                block.splice(i, 2);
+                i--;
+              },
+
+              subtract: function(block) {
+                block[(i-1)] = block[(i-1)] - block[(i+1)];
+                block.splice(i, 2);
+                i--;
+              },
+
+              multiply: function(block) {
+                block[(i-1)] = block[(i-1)] * block[(i+1)];
+                block.splice(i, 2);
+                i--;
+              },
+
+              divide: function(block) {
+                block[(i-1)] = block[(i-1)] / block[(i+1)];
+                block.splice(i, 2);
+                i--;
+              }
+            },
+
+            multiplyAndDivide: function() {
+              if (block[i] === " &times; ") {
+                this.mainOperations.multiply();
+              } else if (block[i] === " &divide; ") {
+                this.mainOperations.divide();
+              }
+            },
+
+            addAndSubtract: function() {
+              if (block[i] === " &minus; ") {
+                this.mainOperations.subtract();
+              } else if (block[i] === " &plus; ") {
+                this.mainOperations.add();
+              }
+            }
+          }
+
+          //multiplication and division first
+          for (i = 0; i < block.length; i ++) {
+            if (block[i] === " &times; " || block[i] === " &divide; ") {
+              operations.multiplyAndDivide();
+            }
+          }
+
+          //after multipication and division are complete, perform addition and subtraction
+          for (i = 0; i < block.length; i ++) {
+            if (block[i] === " &minus; " || block[i] === " &plus; ") {
+              operations.addAndSubtract();
+            }
+          }
+        }
+        evaluate();
+        toCalc[start] = block[0];
+        toCalc.splice(start + 1, block.length);
+      }
+
+
+
+
+
+      var calculated;
+      function evaluationManager() {
+        if (toCalc.length > 1) {
+          evaluateByBlock();
+          console.log(toCalc);
+          evaluationManager();
+        } else {
+          calculated = toCalc;
         }
       }
 
-      //after multipication and division are complete, perform addition and subtraction
-      for (i = 0; i < toCalc.length; i ++) {
-        if (toCalc[i] === " &minus; " || toCalc[i] === " &plus; ") {
-          operations.addAndSubtract();
-        }
-      }
+      evaluationManager();
 
-      console.log(toCalc);
+
+      console.log(calculated);
 
       //Trim answer to seven decimal places and split each digit
-      var untrimmed = toCalc[0].toPrecision(7).toString().split('');
+      var untrimmed = calculated[0].toPrecision(7).toString().split('');
 
       //Chop off any zeros at the end of the answer
       function trim() {
@@ -684,6 +739,8 @@ function operate(operator) {
   });
 
 });
+
+
 
 /*parBlockState legacy code (probably unnecessary, but just in case I'm wrong...)
 isEmpty: false,
