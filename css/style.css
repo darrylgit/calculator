@@ -1,34 +1,25 @@
+body {
+  background-color: #d8ac7f;
+}
+
 .container {
-  max-width: 350px;
-  border: 2px solid blue;
-  border-radius: 10px;
+  max-width: 400px;
   background-color: #b3c6ff;
-  -webkit-transform: scale(1.0);
+  display: grid;
+  grid-template-columns: 100px 100px 100px 100px;
+  grid-template-rows: 80px 80px 80px 80px 80px;
+  margin: auto;
+  border: 2px solid white;
 }
 
-#output {
-  background-color: white;
-  border-radius: 3px;
-  font-size: 16px;
-  text-rendering: geometricPrecision;
-  -webkit-transform: scale(1.0);
-
-}
-
-.col {
-  border: 1px solid #8c8c8c;
-}
-
-.btn {
+.button {
+  padding: auto;
+  border: 2px solid white;
+  background-color: gray;
   font-size: 24px;
-}
-
-#clear {
-  color: white;
-}
-
-.initial {
-  color: white;
+  text-align: center;
+  line-height: 80px;
+  border-collapse: collapse;
 }
 
 .unclosed-par {
