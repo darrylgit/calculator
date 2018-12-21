@@ -84,8 +84,8 @@ $(document).ready(function() {
       clear();
     }
 
-    //if the current index is NaN (i.e. if it's an operator), begin a new array index...
-      //... UNLESS IT'S A NEGATIVE SIGN
+    /*if the current index is NaN (i.e. if it's an operator), begin a new array index
+    UNLESS IT'S A NEGATIVE SIGN*/
     if (toCalc[index.current] &&
         isNaN(Number(toCalc[index.current])) &&
         toCalc[index.current] != "-") {
@@ -97,11 +97,11 @@ $(document).ready(function() {
 
     console.log(toCalc);
 
-    //if the current index is falsy (an empty string or zero), and it's also not...
-      //... a negative sign or a decimal point, it now equals value
+    /*if the current index is falsy (an empty string or zero), and it's also not
+    a negative sign or a decimal point, it now equals value*/
     if (!Number(toCalc[index.current]) &&
         toCalc[index.current] != "-" &&
-        toCalc[index.current] != "0.") {
+        !/./.test(toCalc[index.current])) {
 
           toCalc[index.current] = value;
 
@@ -736,33 +736,41 @@ function operate(operator) {
       function evaluationManager() {
         if (toCalc.length > 1) {
           evaluateByBlock();
-          //console.log(toCalc);
           evaluationManager();
         } else {
-          calculated = toCalc;
+          calculated = toCalc[0];
         }
       }
 
       evaluationManager();
 
-
+      console.log("calculated:");
       console.log(calculated);
 
       //Trim answer to seven decimal places and split each digit
-      var untrimmed = calculated[0].toPrecision(7).toString().split('');
+      var untrimmed = calculated.toPrecision(7).toString().split('');
+      console.log("untrimmed before trim:");
+      console.log(untrimmed);
 
       //Chop off any zeros at the end of the answer
-      function trim() {
-        if (untrimmed[(untrimmed.length-1)] === 0) {
+      (function trim() {
+        if (untrimmed[(untrimmed.length-1)] === "0"
+        || untrimmed[(untrimmed.length-1)] === "." ) {
           untrimmed.splice(-1, 1);
           trim();
         }
-      }
+      })();
+
+      console.log("untrimmed after trim:");
+      console.log(untrimmed);
+
 
       var answer = untrimmed.join('');
+      console.log("answer is:")
+      console.log(answer);
       $('#output').empty();
       toCalc = [answer];
-      output = answer;
+      output = answer.toString();
 
       $('#output').append(output);
       phases.operator = true;
