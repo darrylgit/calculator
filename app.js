@@ -1,6 +1,14 @@
+/* BUGS!
+1) Adding operator to intial states
+2) Repeating equals function
+
+
+*/
+
+
 $(document).ready(function() {
 
-  var init = "<span class='initial'>Enter a number to begin</span>"
+  var init = "0";
   var output = init;
   var toCalc = [""];
 
@@ -52,7 +60,7 @@ $(document).ready(function() {
     if (toCalcForDisplay.length === 1 && toCalcForDisplay[0] === "") {
       toCalcForDisplay = [init];
       toCalc = [""];
-      phases.operator = true;
+      phases.operator = false;
       phases.initial = true;
     }
 
@@ -231,7 +239,7 @@ $(document).ready(function() {
     }
 
     //don't add a negative sign to a zero
-    if (toCalc[index.current] != "0") {
+    if (toCalc[index.current] != "0" && !phases.initial) {
 
       //if there's nothing in this index, just add the negative sign
       if(!toCalc[index.current]) {
@@ -373,9 +381,11 @@ $(document).ready(function() {
 
   $('#backspace').click(function() {
     phases.calcComplete = false;
+    console.log(index.current);
     //if there is only one number left in the entire array, make it a zero
     //if that number is already a zero, ABORT MISSION
-    if (toCalc[0] == "0" && index.current == 0){
+    if (toCalc[0] == "" && index.current == 0){
+      phases.initial = true;
       return true;
     } else if (toCalc[index.current].length == 1 && index.current === 0) {
       toCalc[index.current] = "0";
@@ -392,7 +402,14 @@ $(document).ready(function() {
     accordingly*/
     if (/\(/.test(toCalc[index.current])) {
       toCalc.pop();
-      index.current--;
+      if (toCalc.length < 0) {
+        console.log(toCalc);
+        index.current--;
+      } else {
+        toCalc = [""];
+        phases.initial = true;
+      }
+
       phases.parCount--;
       console.log("parCount after deletion is " + phases.parCount);
       equalsToggle();
@@ -481,10 +498,19 @@ $(document).ready(function() {
 //========================================
 
 function operate(operator) {
-  //if there's already an operator in place, change that operator
-  //console.log(phases.operator);
-  if (!phases.operator && /&/.test(toCalc[index.current])) {
-    toCalc[index.current] = operator;
+
+  console.log(phases.operator);
+  if (!phases.operator) {
+    //if there's already an operator in place, change that operator
+    if (/&/.test(toCalc[index.current])) {
+      toCalc[index.current] = operator;
+    //else, if at initial phase, load a zero and restart function to add operator
+    } else if (phases.initial) {
+      phases.initial = false;
+      phases.operator = true;
+      load("0");
+      operate(operator);
+    }
   } else if (phases.operator && toCalc[index.current] !== "-") {
     //if the number before the operator ends in a decimal point, add a zero at the end
     if (/\.$/.test(toCalc[index.current])) {
@@ -497,6 +523,7 @@ function operate(operator) {
     phases.initial = false;
   }
 
+  console.log(toCalc);
   display();
 }
 
