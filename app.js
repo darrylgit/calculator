@@ -551,17 +551,6 @@ function operate(operator) {
       })();
     }
 
-    // The Richard Commit
-    if (phases.calculate) {
-
-      phases.calculate = false;
-      phases.initial = true;
-      toCalc = ['<span style="font-size: 24px">&epsilon;</span>==D--'];
-      display();
-      toCalc = [""];
-      return true;
-    }
-    // End Richard Commit
 
     if (phases.parCount) {
       flashParentheses();
