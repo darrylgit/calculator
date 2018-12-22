@@ -1,16 +1,14 @@
 /* BUGS!
-1) Adding operator to intial states
 2) Repeating equals function
 
 
 */
-
-
 $(document).ready(function() {
 
   var init = "0";
   var output = init;
   var toCalc = [""];
+  var lastCalculation = null;
 
   let phases = {
     initial: true,
@@ -76,6 +74,7 @@ $(document).ready(function() {
     $('#output').append(toCalcForDisplay.join(''));
   }
 
+
   function load(value) {
     phases.initial = false;
 
@@ -120,79 +119,16 @@ $(document).ready(function() {
   //INTEGERS
   //========================================
 
-  $("#1").click(function() {
+  $(".natural").click(function() {
     phases.operator = true;
-    load("1");
+    let val = $(this).data('value').toString();
+    load(val);
     if (toCalc.length > 2) {
       phases.calculate = true;
     }
   });
 
-  $("#2").click(function() {
-    phases.operator = true;
-    load("2");
-    if (toCalc.length > 2) {
-      phases.calculate = true;
-    }
-  });
-
-  $("#3").click(function() {
-    phases.operator = true;
-    load("3");
-    if (toCalc.length > 2) {
-      phases.calculate = true;
-    }
-  });
-
-  $("#4").click(function() {
-    phases.operator = true;
-    load("4");
-    if (toCalc.length > 2) {
-      phases.calculate = true;
-    }
-  });
-
-  $("#5").click(function() {
-    phases.operator = true;
-    load("5");
-    if (toCalc.length > 2) {
-      phases.calculate = true;
-    }
-  });
-
-  $("#6").click(function() {
-    phases.operator = true;
-    load("6");
-    if (toCalc.length > 2) {
-      phases.calculate = true;
-    }
-  });
-
-  $("#7").click(function() {
-    phases.operator = true;
-    load("7");
-    if (toCalc.length > 2) {
-      phases.calculate = true;
-    }
-  });
-
-  $("#8").click(function() {
-    phases.operator = true;
-    load("8");
-    if (toCalc.length > 2) {
-      phases.calculate = true;
-    }
-  });
-
-  $("#9").click(function() {
-    phases.operator = true;
-    load("9");
-    if (toCalc.length > 2) {
-      phases.calculate = true;
-    }
-  });
-
-  $("#0").click(function() {
+  $("#zero").click(function() {
     if (toCalc[index.current] != "0") {
       phases.operator = true;
       load("0");
@@ -204,13 +140,13 @@ $(document).ready(function() {
 
 
 //========================================
-//SPECIAL CHARACTERS (negative sign, parentheses, backspace, decimal point)
+// NEGATIVE
 //========================================
 
   $('#negative').click(function(){
 
-    //the the current index in an operator or parentheses, prepare to insert the...
-      // ... negative sign at the next array index
+    /*the the current index in an operator or parentheses, prepare to insert the
+    negative sign at the next array index*/
     if (isNaN(Number(toCalc[index.current]))) {
       index.current++;
     }
@@ -253,6 +189,9 @@ $(document).ready(function() {
     display();
   })
 
+  //========================================
+  // PARENTHESES AND BACKSPACE
+  //========================================
 
   /*the parentheses and backspace functions need to track how many unclosed parentheses
   there are. They'll both use this function.*/
@@ -262,6 +201,10 @@ $(document).ready(function() {
       return phases.parCount ? ") !" : "=";
     })
   }
+
+  //========================================
+  // PARENTHESES
+  //========================================
 
 
   $('#parentheses').click(function() {
@@ -290,7 +233,7 @@ $(document).ready(function() {
         phases.operator = true;
 
       },
-    }
+    };
 
     // if user selects parentheses immmediately after a calculation, start multiplication
     if (phases.calcComplete) {
@@ -304,6 +247,7 @@ $(document).ready(function() {
         index.current++;
       }
       console.log(toCalc);
+      equalsToggle();
       display();
       return true;
     }
@@ -324,7 +268,6 @@ $(document).ready(function() {
         console.log("hasNoOperator is " + this.hasNoOperator);
         console.log("hasOperatorAndReagent is " + this.hasOperatorAndReagent);
       },
-
     };
 
 
@@ -369,8 +312,6 @@ $(document).ready(function() {
     }
 
     //if there are unclosed parentheses, change the equals button
-
-    //console.log(phases.parCount);
     equalsToggle();
 
     console.log("parCount is " + phases.parCount);
@@ -378,6 +319,9 @@ $(document).ready(function() {
     display();
   });
 
+  //========================================
+  // BACKSPACE
+  //========================================
 
   $('#backspace').click(function() {
     phases.calcComplete = false;
@@ -433,9 +377,9 @@ $(document).ready(function() {
       return true;
     }
 
-    //If the current index is an HTML entity (an operator), remove the entire index...
-      //... and make it so you can't add another decimal point to the number before...
-      //.. the operator, should a decimal point already exist.
+    /*If the current index is an HTML entity (an operator), remove the entire index...
+    and make it so you can't add another decimal point to the number before...
+    the operator, should a decimal point already exist.*/
     if (/&/.test(toCalc[index.current])) {
       if (/\./.test(toCalc[index.previous()])) {
         phases.decimal = false;
@@ -457,8 +401,11 @@ $(document).ready(function() {
     display();
   });
 
+  //========================================
+  // DECIMAL
+  //========================================
 
-  $('#point').click(function() {
+  $('#decimal').click(function() {
     function loadDecimal() {
       //console.log(index.current);
       //console.log(phases.decimal);
@@ -499,7 +446,6 @@ $(document).ready(function() {
 
 function operate(operator) {
 
-  console.log(phases.operator);
   if (!phases.operator) {
     //if there's already an operator in place, change that operator
     if (/&/.test(toCalc[index.current])) {
@@ -588,19 +534,21 @@ function operate(operator) {
 
       console.log(toCalcForDisplay);
 
-      //skelton of a display function:
+      //skeleton of a display function:
       $('#output').empty();
       $('#output').append(toCalcForDisplay.join(''));
 
       /*change everything back to normal (but don't display it just yet-- we want
       our animation to finish playing first)*/
-      for (let i = 0; i < toCalcForDisplay.length; i++) {
-        if (toCalcForDisplay[i] === "<span class='unclosed-par'>( </span>") {
-          toCalcForDisplay[i] = "( ";
-          toCalcForDisplay.splice(i + 1, 1);
-          console.log(toCalcForDisplay);
+      (function resetToCalcForDisplay() {
+        for (let i = 0; i < toCalcForDisplay.length; i++) {
+          if (toCalcForDisplay[i] === "<span class='unclosed-par'>( </span>") {
+            toCalcForDisplay[i] = "( ";
+            toCalcForDisplay.splice(i + 1, 1);
+            console.log(toCalcForDisplay);
+          }
         }
-      }
+      })();
     }
 
     // The Richard Commit
@@ -620,20 +568,98 @@ function operate(operator) {
 
     } else if (phases.calculate) {
 
-
-
       console.log(toCalc);
+      /*
+      function determineLastCalculation() {
+        if (!isNaN(Number(toCalc.slice(-1)))) {
+          lastCalculation = toCalc.slice(-2);
+        } else if (toCalc.slice(-1) === " )") {
+          var start = 0;
+          function findCorrespondingOpenPar() {
+            for (i = toCalc.length - 1; i > -1; i--) {
+              if (toCalc[i] === "( ") {
+                start = i;
+                return true;
+              }
+            }
+          }
+          findCorrespondingOpenPar();
 
-      //var start = 0;
-      //var end = -1;
+          if(/&/.test(toCalc[start -1])) {
+            //evaluate that block
+            //lastCalculation = [operator, that block];
+          } else {
+            lastCalculation = null;
+          }
+        }
+      }
+      */
+
+      const operations = {
+        mainOperations: {
+          /*math performed on indices in front of and behind the index.current (operator) index,
+          then clear operator and reagent*/
+          add: function(arr, index) {
+            arr[(index-1)] = parseFloat(arr[(index-1)]) + parseFloat(arr[(index+1)]);
+            arr.splice(index, 2);
+          },
+
+          subtract: function(arr, index) {
+            arr[(index-1)] = arr[(index-1)] - arr[(index+1)];
+            arr.splice(index, 2);
+          },
+
+          multiply: function(arr, index) {
+            arr[(index-1)] = arr[(index-1)] * arr[(index+1)];
+            arr.splice(index, 2);
+          },
+
+          divide: function(arr, index) {
+            arr[(index-1)] = arr[(index-1)] / arr[(index+1)];
+            arr.splice(index, 2);
+          }
+        },
+
+        multiplyAndDivide: function(arr, index) {
+          if (arr[index] === " &times; ") {
+            this.mainOperations.multiply(arr, index);
+          } else if (arr[index] === " &divide; ") {
+            this.mainOperations.divide(arr, index);
+          }
+        },
+
+        addAndSubtract: function(arr, index) {
+          if (arr[index] === " &minus; ") {
+            this.mainOperations.subtract(arr, index);
+          } else if (arr[index] === " &plus; ") {
+            this.mainOperations.add(arr, index);
+          }
+        }
+      };
 
 
+      function evaluate(arr) {
+        //multiplication and division first
+        for (i = 0; i < arr.length; i++) {
+          if (arr[i] === " &times; " || arr[i] === " &divide; ") {
+            operations.multiplyAndDivide(arr, i);
+            i--;
+          }
+        }
 
-      //determineBlockForEvaluation();
+        //after multipication and division are complete, perform addition and subtraction
+        for (i = 0; i < arr.length; i++) {
+          if (arr[i] === " &minus; " || arr[i] === " &plus; ") {
+            operations.addAndSubtract(arr, i);
+            i--;
+          }
+        }
+      }
 
       function evaluateByBlock() {
         var start = 0;
         var end = toCalc.length;
+
         function determineBlockForEvaluation() {
           console.log(start)
           console.log(end)
@@ -661,74 +687,15 @@ function operate(operator) {
           }
           console.log(start);
           console.log(end);
-
         }
+
         determineBlockForEvaluation();
         var block = toCalc.slice(start, end);
         console.log("Block is:")
         console.log(block);
 
-        function evaluate() {
-          const operations = {
-            mainOperations: {
-              //math performed on indices in front of and behind the index.current (operator) index
-              add: function() {
-                block[(i-1)] = parseFloat(block[(i-1)]) + parseFloat(block[(i+1)]);
-                block.splice(i, 2);
-                i--;
-              },
-
-              subtract: function() {
-                block[(i-1)] = block[(i-1)] - block[(i+1)];
-                block.splice(i, 2);
-                i--;
-              },
-
-              multiply: function() {
-                block[(i-1)] = block[(i-1)] * block[(i+1)];
-                block.splice(i, 2);
-                i--;
-              },
-
-              divide: function() {
-                block[(i-1)] = block[(i-1)] / block[(i+1)];
-                block.splice(i, 2);
-                i--;
-              }
-            },
-
-            multiplyAndDivide: function() {
-              if (block[i] === " &times; ") {
-                this.mainOperations.multiply();
-              } else if (block[i] === " &divide; ") {
-                this.mainOperations.divide();
-              }
-            },
-
-            addAndSubtract: function() {
-              if (block[i] === " &minus; ") {
-                this.mainOperations.subtract();
-              } else if (block[i] === " &plus; ") {
-                this.mainOperations.add();
-              }
-            }
-          }
-
-          //multiplication and division first
-          for (i = 0; i < block.length; i ++) {
-            if (block[i] === " &times; " || block[i] === " &divide; ") {
-              operations.multiplyAndDivide();
-            }
-          }
-
-          //after multipication and division are complete, perform addition and subtraction
-          for (i = 0; i < block.length; i ++) {
-            if (block[i] === " &minus; " || block[i] === " &plus; ") {
-              operations.addAndSubtract();
-            }
-          }
-        }
-        evaluate();
+        evaluate(block);
+        console.log(block);
         toCalc[start] = block[0];
         toCalc.splice(start + 1, block.length);
         if (toCalc[start - 1] === "( ") {
@@ -764,8 +731,12 @@ function operate(operator) {
 
       //Chop off any zeros at the end of the answer
       (function trim() {
-        if (untrimmed[(untrimmed.length-1)] === "0"
-        || untrimmed[(untrimmed.length-1)] === "." ) {
+        if (untrimmed[(untrimmed.length-1)] === ".") {
+          untrimmed.splice(-1, 1);
+          return true;
+        } else if (untrimmed[(untrimmed.length-1)] === "0"
+        && untrimmed.includes(".")
+        && !untrimmed.includes("e")) {
           untrimmed.splice(-1, 1);
           trim();
         }
@@ -788,8 +759,10 @@ function operate(operator) {
       phases.calcComplete = true;
       phases.calculate = false;
       index.current = 0;
-    }
+    } else if (phases.calcComplete) {
 
+
+    }
 
   });
 
