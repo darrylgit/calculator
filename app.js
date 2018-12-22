@@ -100,7 +100,8 @@ $(document).ready(function() {
     a negative sign or a decimal point, it now equals value*/
     if (!Number(toCalc[index.current]) &&
         toCalc[index.current] != "-" &&
-        !/./.test(toCalc[index.current])) {
+        !/./.test(toCalc[index.current]) ||
+        toCalc[index.current] == undefined) {
 
           toCalc[index.current] = value;
 
@@ -150,6 +151,9 @@ $(document).ready(function() {
     if (isNaN(Number(toCalc[index.current]))) {
       index.current++;
     }
+    console.log("current index is:");
+    console.log(toCalc[index.current]);
+    console.log(!toCalc[index.current]);
 
     function addOrRemoveNegative() {
 
@@ -179,6 +183,7 @@ $(document).ready(function() {
 
       //if there's nothing in this index, just add the negative sign
       if(!toCalc[index.current]) {
+        console.log("Load negative!");
         load("-");
       } else {
         addOrRemoveNegative();
