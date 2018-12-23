@@ -1,9 +1,39 @@
+body, html {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+body {
+  background-image: linear-gradient(#ffa370, #ffe2d2);
+  background-repeat: no-repeat;
+}
+
 .container {
-  max-width: 350px;
+  width: 360px;
+  height: 640px;
+  margin-top: 5rem;
   border: 3px solid #7d8ab2;
+  background-color: white;
   border-radius: 10px;
-  background-color: #b3c6ff;
+  padding: 0;
   -webkit-transform: scale(1.0);
+  overflow: hidden;
+}
+
+table {
+  margin-top: 3rem;
+  width: 100%;
+  text-align: center;
+}
+
+td {
+  width: 25%;
+  font-size: 2.4rem;
 }
 
 #output-outer {
