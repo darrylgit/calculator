@@ -1,4 +1,4 @@
-body, html {
+html, body {
   height: 100%;
   width: 100%;
   margin: 0;
@@ -6,11 +6,12 @@ body, html {
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+  background-image: linear-gradient(#ffe2d2, #ffbc97) ;
+  background-repeat: no-repeat;
 }
 
 body {
-  background-image: linear-gradient(#ffa370, #ffe2d2);
-  background-repeat: no-repeat;
+
 }
 
 .container {
@@ -26,7 +27,7 @@ body {
 }
 
 table {
-  margin-top: 3rem;
+  margin-top: 2rem;
   width: 100%;
   text-align: center;
 }
