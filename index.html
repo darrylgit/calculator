@@ -20,38 +20,42 @@
 <!-- START HERE -->
 <div class="container">
 
-
+  <div class="row">
+    <div class="col text-right" id="output-outer">
+      <div id="output"></div>
+    </div>
+  </div>
 
   <table>
     <tr>
-      <td><a href="">C</a></td>
-      <td><a href="">B</a></td>
-      <td><a href="">()</a></td>
-      <td><a href="">/</a></td>
+      <td><a href="#" id="clear"><strong>C</strong></a></td>
+      <td><a href="#" id="backspace"><i class="fas fa-arrow-left"></i></a></td>
+      <td><a href="#" id="parentheses">( )</a></td>
+      <td><a href="#" class="operator" id="divide">&divide;</a></td>
     </tr>
     <tr>
-      <td><a href="">7</a></td>
-      <td><a href="">8</a></td>
-      <td><a href="">9</a></td>
-      <td><a href="">X</a></td>
+      <td><a href="#" class="integer natural" id="seven" data-value="7">7</a></td>
+      <td><a href="#" class="integer natural" id="eight" data-value="8">8</a></td>
+      <td><a href="#" class="integer natural" id="nine" data-value="9">9</a></td>
+      <td><a href="#" class="operator" id="times">&times;</a></td>
     </tr>
     <tr>
-      <td><a href="">4</a></td>
-      <td><a href="">5</a></td>
-      <td><a href="">6</a></td>
-      <td><a href="">-</a></td>
+      <td><a href="#" class="integer natural" id="four" data-value="4">4</a></td>
+      <td><a href="#" class="integer natural" id="five" data-value="5">5</a></td>
+      <td><a href="#" class="integer natural" id="six" data-value="6">6</a></td>
+      <td><a href="#" class="operator" id="minus">&minus;</a></td>
     </tr>
     <tr>
-      <td><a href="">1</a></td>
-      <td><a href="">2</a></td>
-      <td><a href="">3</a></td>
-      <td><a href="">+</a></td>
+      <td><a href="#" class="integer natural"id="one" data-value="1">1</a></td>
+      <td><a href="#" class="integer natural" id="two" data-value="2">2</a></td>
+      <td><a href="#" class="integer natural" id="three" data-value="3">3</a></td>
+      <td><a href="#" class="operator" id="plus">&plus;</a></td>
     </tr>
     <tr>
-      <td><a href="">+/-</a></td>
-      <td><a href="">0</a></td>
-      <td><a href="">.</a></td>
-      <td><a href="">=</a></td>
+      <td><a href="#" id="negative">&plus;/&minus;</a></td>
+      <td><a href="#" class="integer" id="zero">0</a></td>
+      <td><a href="#" id="decimal">.</a></td>
+      <td><a href="#" id="equals">=</a></td>
     </tr>
   </table>
 </div>

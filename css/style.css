@@ -1,31 +1,36 @@
 html, body {
-  height: 100%;
-  width: 100%;
+  min-height: 100%;
   margin: 0;
   -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-  background-image: linear-gradient(#ffe2d2, #ffbc97) ;
+  background: -webkit-linear-gradient(#ffe2d2, #ffbc97) fixed;
+  background: -moz-linear-gradient(#ffe2d2, #ffbc97) fixed;
+  background: -o-linear-gradient(#ffe2d2, #ffbc97) fixed;
+  background: linear-gradient(#ffe2d2, #ffbc97) fixed;
   background-repeat: no-repeat;
 }
 
 body {
-
+  height: 100%;
+  width: 100%;
 }
+
+
 
 .container {
   position: relative;
   width: 360px;
   height: 640px;
   margin-top: 5rem;
-  border: 3px solid #7d8ab2;
+  border: 3px solid #6FA7C6;
   background-color: white;
   border-radius: 10px;
   padding: 0;
   -webkit-transform: scale(1.0);
   overflow: hidden;
-  background-image: url(background.svg);
+  background-image: url(background.jpg);
   -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -45,11 +50,21 @@ td {
   font-size: 2.4rem;
 }
 
+a:hover {
+  text-decoration: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
 #output-outer {
-  background-color: white;
-  border-radius: .25em;
-  border: 2px solid #8c8c8c;
-  font-size: 1.5em;
+  background-color: transparent;
+  margin-top: 35%;
+  padding-right: 1.5rem;
+  font-size: 3em;
+  color: white;
   overflow: hidden;
   white-space: nowrap;
   text-rendering: geometricPrecision;
@@ -60,59 +75,28 @@ td {
   float: right;
 }
 
-.col {
-  border: 1px solid #8c8c8c;
-}
-
-.btn {
-  font-size: 1.5em;
-}
-
-.btn {
-  border-radius: 0;
-}
-
-#clear {
-  color: white;
-  border-radius: 0.25rem 0 0 0;
-  border-width: 2px 1px 1px 2px;
-}
-
-#divide {
-  border-radius: 0 0.25rem 0 0;
-  border-width: 2px 2px 1px 1px;
-}
-
-#negative {
-  border-radius: 0 0 0 0.25rem;
-  border-width: 1px 1px 2px 2px;
-}
-
+.operator,
 #equals {
-  border-radius: 0 0 0.25rem 0;
-  border-width: 1px 2px 2px 1px;
+  color: #ff7e35;
+}
+
+.integer {
+  color:#2E2E2E;
+}
+
+#backspace {
+  font-size: 2.1rem;
 }
 
 #backspace,
+#negative,
+#decicmal,
 #parentheses {
-  border-width: 2px 1px 1px 1px;
+  color: #727272;
 }
 
-#times,
-#minus,
-#plus {
-  border-width: 1px 2px 1px 1px;
-}
-
-#decimal,
-#zero {
-  border-width: 1px 1px 2px 1px;
-}
-
-#seven,
-#four,
-#one {
-  border-width: 1px 1px 1px 2px;
+#clear {
+  color: #ff3551;
 }
 
 .initial {
@@ -131,11 +115,28 @@ td {
 @keyframes flash {
   from {
     -webkit-transform: scale(1.5);
-    color: red;
+    color: #ff3551;
   }
 
   to {
     -webkit-transform: scale(1.0);
-    color: black;
+    color: white;
+  }
+}
+
+@media (max-width: 576px) {
+  html {
+    height: 100%
+  }
+
+  .container {
+    height: 100%;
+    width: 100%;
+    margin-top: 0;
+    border-radius: 0;
+  }
+
+  table {
+    height: 50%;
   }
 }
