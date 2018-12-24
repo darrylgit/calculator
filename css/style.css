@@ -1,3 +1,8 @@
+/*@font-face {
+  font-family: 'Roboto';
+  src: url(css/fonts/Roboto-Thin.tff);
+}*/
+
 html, body {
   min-height: 100%;
   margin: 0;
@@ -16,7 +21,7 @@ html, body {
 body {
   height: 100%;
   width: 100%;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", serif;
 }
 
 
