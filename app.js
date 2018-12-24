@@ -1,7 +1,8 @@
-/* BUGS!
+/* To-do
 1) large number rounding
 2) backspace on open parentheses
 3) multiplication after closing parentheses
+4) backspace on large numbers with e
 
 */
 $(document).ready(function() {
