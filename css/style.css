@@ -1,7 +1,4 @@
-/*@font-face {
-  font-family: 'Roboto';
-  src: url(css/fonts/Roboto-Thin.tff);
-}*/
+
 
 html, body {
   min-height: 100%;
@@ -21,7 +18,8 @@ html, body {
 body {
   height: 100%;
   width: 100%;
-  font-family: "Roboto", serif;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
 }
 
 
@@ -120,15 +118,16 @@ CLEAR BUTTON
   display: flex;
   justify-content: center;
   align-self: center;
-  -webkit-transform: scale(1.4);
+  -webkit-transform: scale(1.2);
 }
 
 .clear-button {
-  color: #ff3551;
+  color: #ff3545;
 }
 
 .clear-button:hover {
-  background-color: #ff3551;
+  /*background-color: #ff3551;*/
+  background-color: #ff3545;
   color: white;
 }
 
@@ -139,18 +138,22 @@ AUX BUTTONS
 */
 
 #backspace {
-  font-size: 2.1rem;
+  font-size: 1.9rem;
 }
 
 #negative {
   font-size: 1.7rem;
 }
 
+#decimal {
+  font-weight: 500;
+}
+
 .aux {
   display: flex;
   justify-content: center;
   align-self: center;
-  -webkit-transform: scale(1.2);
+  -webkit-transform: scale(1);
 }
 
 .aux-button {
@@ -201,7 +204,7 @@ OPERATOR and EQUALS BUTTONS
   align-self: center;
   line-height: 100%;
   /*padding-bottom: 10%;*/
-  -webkit-transform: scale(1.4);
+  -webkit-transform: scale(1.2);
 }
 
 .equals {
@@ -216,18 +219,19 @@ OPERATOR and EQUALS BUTTONS
 
 
 .operator-button {
-  color: #ff7e35;
+  color: #ff8a35;
   background-color: white;
 }
 
 .operator-button:hover {
   color: white;
-  background-color: #ff7e35;
+  background-color: #ff8a35;
 }
 
 .equals-button {
   color: white;
-  background-color: #35B6FF;
+  /*background-color: #35B6FF;*/
+  background-color: #35AAFF;
 }
 
 .equals-button:hover {
@@ -244,6 +248,7 @@ OPERATOR and EQUALS BUTTONS
   margin-top: 35%;
   padding-right: 1.5rem;
   font-size: 3em;
+  font-weight: 500;
   color: white;
   overflow: hidden;
   white-space: nowrap;
