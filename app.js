@@ -204,9 +204,22 @@ $(document).ready(function() {
   there are. They'll both use this function.*/
   var equalsToggle = function() {
     var equalsEntity = '&equals;';
-    $('#equals').text(function (i, equalsEntity) {
-      return phases.parCount ? ") !" : "=";
-    })
+
+    function setEquals() {
+      $('#equals').html(equalsEntity).text();
+      $('#equals').css("-webkit-transform", "scale(1.5)")
+    }
+
+    function setUnclosedWarning() {
+      $('#equals').text(") !");
+      $('#equals').css("-webkit-transform", "scale(1.0)")
+    }
+
+    if (phases.parCount) {
+      setUnclosedWarning();
+    } else {
+      setEquals();
+    }
   }
 
   //========================================
