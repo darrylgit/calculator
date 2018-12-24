@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
   <link rel="stylesheet" href="css/style.css">
@@ -20,88 +21,213 @@
 <!-- START HERE -->
 <div class="container">
 
+  <!--DISPLAY-->
   <div class="row">
     <div class="col text-right" id="output-outer">
       <div id="output"></div>
     </div>
   </div>
 
+  <!--KEYPAD-->
   <table>
+
+    <!-- ROW 1: CLEAR, BACKSPACE, PARENTHESES, DIVIDE-->
     <tr>
-      <td><a href="#" id="clear"><strong>C</strong></a></td>
-      <td><a href="#" id="backspace"><i class="fas fa-arrow-left"></i></a></td>
-      <td><a href="#" id="parentheses">( )</a></td>
-      <td><a href="#" class="operator" id="divide">&divide;</a></td>
+      <!--CLEAR-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner clear-button" id="clear">
+            <span id="clear-styles"><strong>C</strong></span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--BACKSPACE-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner aux-button" id="backspace">
+            <span class="aux"><i class="fas fa-arrow-left"></i></span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--PARENTHESES-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner aux-button" id="parentheses">
+            <span class="aux" id="parentheses-styles">( )</span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--DIVIDE-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner operator-button" id="divide">
+            <span class="operator">&divide;</span>
+          </a>
+        </div>
+      </td>
     </tr>
+
+    <!-- ROW 2: SEVEN, EIGHT, NINE, TIMES-->
     <tr>
-      <td><a href="#" class="integer natural" id="seven" data-value="7">7</a></td>
-      <td><a href="#" class="integer natural" id="eight" data-value="8">8</a></td>
-      <td><a href="#" class="integer natural" id="nine" data-value="9">9</a></td>
-      <td><a href="#" class="operator" id="times">&times;</a></td>
+      <!--SEVEN-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner natural integer-button" id="seven" data-value="7">
+            <span class="integer">7</span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--EIGHT-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner natural integer-button" id="eight" data-value="8">
+            <span class="integer">8</span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--NINE-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner natural integer-button" id="nine" data-value="9">
+            <span class="integer">9</span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--TIMES-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner operator-button" id="times">
+            <span class="operator">&times;</span>
+          </a>
+        </div>
+      </td>
     </tr>
+
+    <!-- ROW 3: FOUR, FIVE, SIX, MINUS-->
     <tr>
-      <td><a href="#" class="integer natural" id="four" data-value="4">4</a></td>
-      <td><a href="#" class="integer natural" id="five" data-value="5">5</a></td>
-      <td><a href="#" class="integer natural" id="six" data-value="6">6</a></td>
-      <td><a href="#" class="operator" id="minus">&minus;</a></td>
+      <!--FOUR-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner natural integer-button" id="four" data-value="4">
+            <span class="integer">4</span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--FIVE-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner natural integer-button" id="five" data-value="5">
+            <span href="#" class="integer">5</span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--SIX-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner natural integer-button" id="six" data-value="6">
+            <span class="integer">6</span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--MINUS-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner operator-button" id="minus">
+            <span class="operator">&minus;</span>
+          </a>
+        </div>
+      </td>
     </tr>
+
+    <!-- ROW 4: ONE, TWO, THREE, PLUS-->
     <tr>
-      <td><a href="#" class="integer natural"id="one" data-value="1">1</a></td>
-      <td><a href="#" class="integer natural" id="two" data-value="2">2</a></td>
-      <td><a href="#" class="integer natural" id="three" data-value="3">3</a></td>
-      <td><a href="#" class="operator" id="plus">&plus;</a></td>
+      <!--ONE-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner natural integer-button" id="one" data-value="1">
+            <span class="integer">1</span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--TWO-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner natural integer-button" id="two" data-value="2">
+            <span class="integer natural">2</span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--THREE-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner natural integer-button" id="three" data-value="3">
+            <span class="integer natural">3</span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--PLUS-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner operator-button" id="plus">
+            <span class="operator">&plus;</span>
+          </a>
+        </div>
+      </td>
     </tr>
+
+    <!-- ROW 5: NEGATIVE, ZERO, DECIMAL, EQUALS-->
     <tr>
-      <td><a href="#" id="negative"><strong>&plus;</strong>/<strong>&minus;</strong></a></td>
-      <td><a href="#" class="integer" id="zero">0</a></td>
-      <td><a href="#" id="decimal"><strong>.</strong></a></td>
-      <td><a href="#" id="equals">=</a></td>
+      <!--NEGATIVE-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner aux-button" id="negative">
+            <span class="aux"><strong>&plus;</strong>/<strong>&minus;</strong></span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--ZERO-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner integer-button" id="zero">
+            <span class="integer">0</span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--DECIMAL-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner aux-button" id="decimal">
+            <span class="aux"><strong>.</strong></span>
+          </a>
+        </div>
+      </td>
+        <td class="gutter"></td>
+      <!--EQUALS-->
+      <td>
+        <div class="circle-outer">
+          <a href="#" class="circle-inner equals-button" id="equals">
+            <span class="equals">&equals;</span>
+          </a>
+        </div>
+      </td>
     </tr>
   </table>
-</div>
 
-
-<!--
-<div class="container mt-5">
-  <div class="row">
-    <div class="col pt-5 pb-2 mx-2 mt-2 mb-1 text-right" id="output-outer">
-      <div id="output"></div>
-    </div>
-  </div>
-  <div class="user-buttons">
-    <div class="row mx-1 mt-2">
-      <a class="col btn btn-danger py-2" id="clear">C</a>
-      <a class="col btn btn-light py-2" id="backspace"><i class="fas fa-arrow-left"></i></a>
-      <a class="col btn btn-light py-2" id="parentheses">( )</a>
-      <a class="col btn btn-light py-2" id="divide">&divide;</a>
-    </div>
-    <div class="row mx-1">
-      <a class="col btn btn-light py-2 natural" id="seven" data-value="7">7</a>
-      <a class="col btn btn-light py-2 natural" id="eight" data-value="8">8</a>
-      <a class="col btn btn-light py-2 natural" id="nine" data-value="9">9</a>
-      <a class="col btn btn-light py-2" id="times">&times;</a>
-    </div>
-    <div class="row mx-1">
-      <a class="col btn btn-light py-2 natural" id="four" data-value="4">4</a>
-      <a class="col btn btn-light py-2 natural" id="five" data-value="5">5</a>
-      <a class="col btn btn-light py-2 natural" id="six" data-value="6">6</a>
-      <a class="col btn btn-light py-2" id="minus">&minus;</a>
-    </div>
-    <div class="row mx-1">
-      <a class="col btn btn-light py-2 natural" id="one" data-value="1">1</a>
-      <a class="col btn btn-light py-2 natural" id="two" data-value="2">2</a>
-      <a class="col btn btn-light py-2 natural" id="three" data-value="3">3</a>
-      <a class="col btn btn-light py-2" id="plus">&plus;</a>
-    </div>
-    <div class="row mx-1 mb-3">
-      <a class="col btn btn-light py-2" id="negative">&plus;/&minus;</a>
-      <a class="col btn btn-light py-2" id="zero">0</a>
-      <a class="col btn btn-light py-2" id="decimal">.</a>
-      <a class="col btn btn-primary py-2 text-white" id="equals">=</a>
-    </div>
-  </div>
 </div>
--->
 
   <script>
     //Get the current year for the copyright

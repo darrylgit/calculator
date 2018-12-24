@@ -10,11 +10,13 @@ html, body {
   background: -o-linear-gradient(#ffe2d2, #ffbc97) fixed;
   background: linear-gradient(#ffe2d2, #ffbc97) fixed;
   background-repeat: no-repeat;
+
 }
 
 body {
   height: 100%;
   width: 100%;
+  font-family: 'Roboto', sans-serif;
 }
 
 
@@ -48,12 +50,28 @@ table {
 }
 
 td {
-  width: 25%;
+  width: 20%;
+  margin-left: 2.5%;
+  margin-right: 2.5%;
   font-size: 2.4rem;
   /*border: 1px solid black;*/
   padding: 0;
   position: relative;
+  /*border: 1px solid green;*/
 }
+
+.gutter {
+  width: 6.6667%;
+}
+
+a {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
 
 a:hover {
   text-decoration: none;
@@ -63,6 +81,158 @@ a:hover {
   -o-user-select: none;
   user-select: none;
 }
+
+
+
+.circle-outer {
+  width: 100%;
+  padding-top: 100%;
+  position: relative
+}
+
+.circle-inner{
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: transparent;
+  border-radius: 50%;
+  -webkit-transform: scale(1);
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  /*line-height: 0;*/
+}
+
+/*
+===================================
+CLEAR BUTTON
+===================================
+*/
+
+#clear-styles {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  -webkit-transform: scale(1.4);
+}
+
+.clear-button {
+  color: #ff3551;
+}
+
+.clear-button:hover {
+  background-color: #ff3551;
+  color: white;
+}
+
+/*
+===================================
+AUX BUTTONS
+===================================
+*/
+
+#backspace {
+  font-size: 2.1rem;
+}
+
+#negative {
+  font-size: 1.7rem;
+}
+
+.aux {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  -webkit-transform: scale(1.2);
+}
+
+.aux-button {
+  background-color: white;
+  color: #727272;
+}
+
+.aux-button:hover {
+  background-color: #727272;
+  color: white;
+}
+
+
+/*
+===================================
+INTEGER BUTTONS
+===================================
+*/
+
+.integer {
+  font-size: 2.7rem;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+}
+
+.integer-button {
+  color: #6FA7C6;
+  background: white;
+}
+
+.integer-button:hover {
+  color: white;
+  background: #6FA7C6;
+}
+
+/*
+===================================
+OPERATOR and EQUALS BUTTONS
+===================================
+*/
+
+
+.operator {
+  font-size: 3rem;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  line-height: 100%;
+  /*padding-bottom: 10%;*/
+  -webkit-transform: scale(1.4);
+}
+
+.equals {
+  font-size: 3rem;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  line-height: 100%;
+  /*padding-bottom: 10%;*/
+  -webkit-transform: scale(1.4);
+}
+
+
+.operator-button {
+  color: #ff7e35;
+  background-color: white;
+}
+
+.operator-button:hover {
+  color: white;
+  background-color: #ff7e35;
+}
+
+.equals-button {
+  color: white;
+  background-color: #35B6FF;
+}
+
+.equals-button:hover {
+  color: white;
+  background-color: #006097;
+}
+
+
+
+
 
 #output-outer {
   background-color: transparent;
@@ -80,61 +250,10 @@ a:hover {
   float: right;
 }
 
-.operator,
-#equals {
-  color: #ff7e35;
-  font-size: 3rem;
 
-  /*display: block;*/
-  display: flex;
-  justify-content: center;
-  align-self: baseline;
-  line-height: 100%;
-  padding-bottom: 10%;
-  padding-top: -20%;
-  /*position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);*/
-  -webkit-transform: scale(1.4);
-}
 
-.integer {
-  color:#2E2E2E;
-  font-size: 2.7rem;
-}
 
-#backspace {
-  font-size: 2.1rem;
-}
 
-#backspace,
-#negative,
-#decimal,
-#parentheses {
-  color: #727272;
-}
-
-#negative {
-  display: flex;
-  justify-content: center;
-  align-self: center;
-  line-height: 100%;
-  padding-bottom: 10%;
-  padding-top: -20%;
-  -webkit-transform: scale(0.85);
-}
-
-#clear {
-  color: #ff3551;
-  display: flex;
-  justify-content: center;
-  align-self: baseline;
-  line-height: 100%;
-  /*padding-bottom: 10%;
-  padding-top: -20%;*/
-  -webkit-transform: scale(1.2);
-}
 
 .initial {
   color: white;
@@ -146,7 +265,6 @@ a:hover {
   animation-duration: 0.25s;
   animation-name: flash;
   animation-timing-function: ease-in;
-
 }
 
 @keyframes flash {
