@@ -206,13 +206,11 @@ $(document).ready(function() {
     var equalsEntity = '&equals;';
 
     function setEquals() {
-      $('#equals').html(equalsEntity).text();
-      $('#equals').css("-webkit-transform", "scale(1.5)")
+      $('#equals').html('<span class="equals">&equals;</span>').text();
     }
 
     function setUnclosedWarning() {
       $('#equals').text(") !");
-      $('#equals').css("-webkit-transform", "scale(1.0)")
     }
 
     if (phases.parCount) {
