@@ -1,32 +1,50 @@
+
 /*
 ===================================
 BODY STYLES
 ===================================
 */
+
+$bg-val1: #ffe2d2;
+$bg-val2: #ffbc97;
+
+@mixin background-gradient ($val1, $val2) {
+  background: -webkit-linear-gradient($val1, $val2) fixed;
+  background:    -moz-linear-gradient($val1, $val2) fixed;
+  background:      -o-linear-gradient($val1, $val2) fixed;
+  background:         linear-gradient($val1, $val2) fixed;
+}
+
+@mixin background-size ($size) {
+  -webkit-background-size: $size;
+     -moz-background-size: $size;
+       -o-background-size: $size;
+          background-size: $size;
+}
+
 html, body {
   min-height: 100%;
   margin: 0;
-  background: -webkit-linear-gradient(#ffe2d2, #ffbc97) fixed;
-  background: -moz-linear-gradient(#ffe2d2, #ffbc97) fixed;
-  background: -o-linear-gradient(#ffe2d2, #ffbc97) fixed;
-  background: linear-gradient(#ffe2d2, #ffbc97) fixed;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-  background-repeat: no-repeat; }
+  @include background-gradient($bg-val1, $bg-val2);
+  @include background-size(cover);
+  background-repeat: no-repeat;
+
+}
 
 body {
   height: 100%;
   width: 100%;
   font-family: "Roboto", sans-serif;
-  font-weight: 300; }
+  font-weight: 300;
+}
+
 
 /*
 ===================================
 CALCULATOR
 ===================================
 */
+
 .container {
   position: relative;
   width: 360px;
@@ -36,20 +54,20 @@ CALCULATOR
   background-color: white;
   border-radius: 20px;
   padding: 0;
-  -webkit-transform: scale(1);
+  -webkit-transform: scale(1.0);
   overflow: hidden;
   background-image: url(../css/background.jpg);
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-  background-repeat: no-repeat; }
+  @include background-size(cover);
+  background-repeat: no-repeat;
+}
+
 
 /*
 ===================================
 DISPLAY
 ===================================
 */
+
 #output-outer {
   background-color: transparent;
   margin-top: 35%;
@@ -60,42 +78,52 @@ DISPLAY
   overflow: hidden;
   white-space: nowrap;
   text-rendering: geometricPrecision;
-  -webkit-transform: scale(1); }
+  -webkit-transform: scale(1.0);
+}
 
 #output {
-  float: right; }
+  float: right;
+}
+
 
 /*
 ===================================
 KEYPAD
 ===================================
 */
+$td-width: 20%;
+$gutter-width: calc((100% - (4 * #{$td-width})) / 3);
+
 table {
   position: absolute;
   bottom: 0.5rem;
   width: 90%;
   margin-left: 5%;
   margin-right: 5%;
-  text-align: center; }
+  text-align: center;
+}
 
 td {
-  width: 20%;
+  width: $td-width;
   margin-left: 2.5%;
   margin-right: 2.5%;
   font-size: 2.4rem;
   padding: 0;
   position: relative;
-  /*border: 1px solid green;*/ }
+  /*border: 1px solid green;*/
+}
 
 .gutter {
-  width: calc((100% - (4 * 20%)) / 3); }
+  width: $gutter-width;
+}
 
 a {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   -o-user-select: none;
-  user-select: none; }
+  user-select: none;
+}
 
 a:hover {
   text-decoration: none;
@@ -103,12 +131,14 @@ a:hover {
   -moz-user-select: none;
   -ms-user-select: none;
   -o-user-select: none;
-  user-select: none; }
+  user-select: none;
+}
 
 .circle-outer {
   width: 100%;
   padding-top: 100%;
-  position: relative; }
+  position: relative
+}
 
 .circle-inner {
   position: absolute;
@@ -121,86 +151,108 @@ a:hover {
   -webkit-transform: scale(1);
   display: flex;
   justify-content: center;
-  align-self: center; }
+  align-self: center;
+}
+
 
 /*
 ===================================
 CLEAR BUTTON
 ===================================
 */
+
 #clear-styles {
   display: flex;
   justify-content: center;
   align-self: center;
-  -webkit-transform: scale(1.2); }
+  -webkit-transform: scale(1.2);
+}
 
 .clear-button {
-  color: #ff3545; }
+  color: #ff3545;
+}
 
 .clear-button:hover {
   /*background-color: #ff3551;*/
   background-color: #ff3545;
-  color: white; }
+  color: white;
+}
+
 
 /*
 ===================================
 AUX BUTTONS
 ===================================
 */
+
 #backspace {
-  font-size: 1.9rem; }
+  font-size: 1.9rem;
+}
 
 #negative {
-  font-size: 1.7rem; }
+  font-size: 1.7rem;
+}
 
 #decimal {
-  font-weight: 500; }
+  font-weight: 500;
+}
 
 .aux {
   display: flex;
   justify-content: center;
   align-self: center;
-  -webkit-transform: scale(1); }
+  -webkit-transform: scale(1);
+}
 
 .aux-button {
   background-color: white;
-  color: #727272; }
+  color: #727272;
+}
 
 .aux-button:hover {
   background-color: #727272;
-  color: white; }
+  color: white;
+}
+
 
 /*
 ===================================
 INTEGER BUTTONS
 ===================================
 */
+
 .integer {
   font-size: 2.7rem;
   display: flex;
   justify-content: center;
-  align-self: center; }
+  align-self: center;
+}
 
 .integer-button {
   color: #6FA7C6;
-  background: white; }
+  background: white;
+}
 
 .integer-button:hover {
   color: white;
-  background: #6FA7C6; }
+  background: #6FA7C6;
+}
+
 
 /*
 ===================================
 OPERATOR and EQUALS BUTTONS
 ===================================
 */
+
 .operator {
   font-size: 3rem;
   display: flex;
   justify-content: center;
   align-self: center;
   line-height: 100%;
-  -webkit-transform: scale(1.2); }
+  -webkit-transform: scale(1.2);
+}
 
 .equals {
   font-size: 3rem;
@@ -208,58 +260,76 @@ OPERATOR and EQUALS BUTTONS
   justify-content: center;
   align-self: center;
   line-height: 100%;
-  -webkit-transform: scale(1.4); }
+  -webkit-transform: scale(1.4);
+}
 
 .operator-button {
   color: #ff8a35;
-  background-color: white; }
+  background-color: white;
+}
 
 .operator-button:hover {
   color: white;
-  background-color: #ff8a35; }
+  background-color: #ff8a35;
+}
 
 .equals-button {
   color: white;
   /*background-color: #35B6FF;*/
-  background-color: #35AAFF; }
+  background-color: #35AAFF;
+}
 
 .equals-button:hover {
   color: white;
-  background-color: #006097; }
+  background-color: #006097;
+}
+
 
 /*
 ===================================
 UNCLOSED PARENTHESES WARNING
 ===================================
 */
+
 .unclosed-par {
   display: inline-block;
   margin-right: 0.25px;
   animation-duration: 0.25s;
   animation-name: flash;
-  animation-timing-function: ease-in; }
+  animation-timing-function: ease-in;
+}
 
 @keyframes flash {
   from {
     -webkit-transform: scale(1.5);
-    color: #ff3551; }
+    color: #ff3551;
+  }
+
   to {
-    -webkit-transform: scale(1);
-    color: white; } }
+    -webkit-transform: scale(1.0);
+    color: white;
+  }
+}
+
 /*
 ===================================
 MEDIA QUERIES
 ===================================
 */
+
 @media (max-width: 576px) {
   html {
-    height: 100%; }
+    height: 100%
+  }
 
   .container {
     height: 100%;
     width: 100%;
     margin-top: 0;
-    border-radius: 0; }
+    border-radius: 0;
+  }
 
   table {
-    height: 50%; } }
+    height: 50%;
+  }
+}

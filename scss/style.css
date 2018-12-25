@@ -1,19 +1,14 @@
-/*
-===================================
-BODY STYLES
-===================================
-*/
 html, body {
   min-height: 100%;
   margin: 0;
-  background: -webkit-linear-gradient(#ffe2d2, #ffbc97) fixed;
-  background: -moz-linear-gradient(#ffe2d2, #ffbc97) fixed;
-  background: -o-linear-gradient(#ffe2d2, #ffbc97) fixed;
-  background: linear-gradient(#ffe2d2, #ffbc97) fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+  background: -webkit-linear-gradient(#ffe2d2, #ffbc97) fixed;
+  background: -moz-linear-gradient(#ffe2d2, #ffbc97) fixed;
+  background: -o-linear-gradient(#ffe2d2, #ffbc97) fixed;
+  background: linear-gradient(#ffe2d2, #ffbc97) fixed;
   background-repeat: no-repeat; }
 
 body {
@@ -22,11 +17,6 @@ body {
   font-family: "Roboto", sans-serif;
   font-weight: 300; }
 
-/*
-===================================
-CALCULATOR
-===================================
-*/
 .container {
   position: relative;
   width: 360px;
@@ -34,42 +24,17 @@ CALCULATOR
   margin-top: 5rem;
   border: 3px solid #6FA7C6;
   background-color: white;
-  border-radius: 20px;
+  border-radius: 10px;
   padding: 0;
   -webkit-transform: scale(1);
   overflow: hidden;
-  background-image: url(../css/background.jpg);
+  background-image: url(background.jpg);
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
   background-repeat: no-repeat; }
 
-/*
-===================================
-DISPLAY
-===================================
-*/
-#output-outer {
-  background-color: transparent;
-  margin-top: 35%;
-  padding-right: 1.5rem;
-  font-size: 3em;
-  font-weight: 500;
-  color: white;
-  overflow: hidden;
-  white-space: nowrap;
-  text-rendering: geometricPrecision;
-  -webkit-transform: scale(1); }
-
-#output {
-  float: right; }
-
-/*
-===================================
-KEYPAD
-===================================
-*/
 table {
   position: absolute;
   bottom: 0.5rem;
@@ -83,12 +48,13 @@ td {
   margin-left: 2.5%;
   margin-right: 2.5%;
   font-size: 2.4rem;
+  /*border: 1px solid black;*/
   padding: 0;
   position: relative;
   /*border: 1px solid green;*/ }
 
 .gutter {
-  width: calc((100% - (4 * 20%)) / 3); }
+  width: 6.6667%; }
 
 a {
   -webkit-user-select: none;
@@ -121,7 +87,8 @@ a:hover {
   -webkit-transform: scale(1);
   display: flex;
   justify-content: center;
-  align-self: center; }
+  align-self: center;
+  /*line-height: 0;*/ }
 
 /*
 ===================================
@@ -200,6 +167,7 @@ OPERATOR and EQUALS BUTTONS
   justify-content: center;
   align-self: center;
   line-height: 100%;
+  /*padding-bottom: 10%;*/
   -webkit-transform: scale(1.2); }
 
 .equals {
@@ -208,6 +176,7 @@ OPERATOR and EQUALS BUTTONS
   justify-content: center;
   align-self: center;
   line-height: 100%;
+  /*padding-bottom: 10%;*/
   -webkit-transform: scale(1.4); }
 
 .operator-button {
@@ -227,11 +196,24 @@ OPERATOR and EQUALS BUTTONS
   color: white;
   background-color: #006097; }
 
-/*
-===================================
-UNCLOSED PARENTHESES WARNING
-===================================
-*/
+#output-outer {
+  background-color: transparent;
+  margin-top: 35%;
+  padding-right: 1.5rem;
+  font-size: 3em;
+  font-weight: 500;
+  color: white;
+  overflow: hidden;
+  white-space: nowrap;
+  text-rendering: geometricPrecision;
+  -webkit-transform: scale(1); }
+
+#output {
+  float: right; }
+
+.initial {
+  color: white; }
+
 .unclosed-par {
   display: inline-block;
   margin-right: 0.25px;
@@ -246,11 +228,6 @@ UNCLOSED PARENTHESES WARNING
   to {
     -webkit-transform: scale(1);
     color: white; } }
-/*
-===================================
-MEDIA QUERIES
-===================================
-*/
 @media (max-width: 576px) {
   html {
     height: 100%; }
