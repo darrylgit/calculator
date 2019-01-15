@@ -119,19 +119,19 @@ td {
 
 a {
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
-  user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+       -o-user-select: none;
+          user-select: none;
 }
 
 a:hover {
   text-decoration: none;
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
-  user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+       -o-user-select: none;
+          user-select: none;
 }
 
 .circle-outer {
@@ -161,6 +161,8 @@ CLEAR BUTTON
 ===================================
 */
 
+$clear-color: #ff3545;
+
 #clear-styles {
   display: flex;
   justify-content: center;
@@ -169,12 +171,11 @@ CLEAR BUTTON
 }
 
 .clear-button {
-  color: #ff3545;
+  color: $clear-color;
 }
 
 .clear-button:hover {
-  /*background-color: #ff3551;*/
-  background-color: #ff3545;
+  background-color: $clear-color;
   color: white;
 }
 
@@ -204,13 +205,15 @@ AUX BUTTONS
   -webkit-transform: scale(1);
 }
 
+$aux-color: #727272;
+
 .aux-button {
   background-color: white;
-  color: #727272;
+  color: $aux-color;
 }
 
 .aux-button:hover {
-  background-color: #727272;
+  background-color: $aux-color;
   color: white;
 }
 
@@ -221,6 +224,8 @@ INTEGER BUTTONS
 ===================================
 */
 
+$integer-color: #6FA7C6;
+
 .integer {
   font-size: 2.7rem;
   display: flex;
@@ -229,13 +234,13 @@ INTEGER BUTTONS
 }
 
 .integer-button {
-  color: #6FA7C6;
+  color: $integer-color;
   background: white;
 }
 
 .integer-button:hover {
   color: white;
-  background: #6FA7C6;
+  background: $integer-color;
 }
 
 
@@ -244,6 +249,8 @@ INTEGER BUTTONS
 OPERATOR and EQUALS BUTTONS
 ===================================
 */
+
+$operator-color: #ff8a35;
 
 .operator {
   font-size: 3rem;
@@ -264,13 +271,13 @@ OPERATOR and EQUALS BUTTONS
 }
 
 .operator-button {
-  color: #ff8a35;
+  color: $operator-color;
   background-color: white;
 }
 
 .operator-button:hover {
   color: white;
-  background-color: #ff8a35;
+  background-color: $operator-color;
 }
 
 .equals-button {
