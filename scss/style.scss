@@ -339,4 +339,18 @@ MEDIA QUERIES
   table {
     height: 50%;
   }
+
+  #output-outer {
+    margin-top: 25%;
+  }
+
+  .container {
+    @include background-size(100% 80%);
+  }
+}
+
+@media (max-width: 440px) {
+  #output-outer {
+    margin-top: 30%;
+  }
 }

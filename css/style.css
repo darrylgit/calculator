@@ -261,4 +261,16 @@ MEDIA QUERIES
     border-radius: 0; }
 
   table {
-    height: 50%; } }
+    height: 50%; }
+
+  #output-outer {
+    margin-top: 25%; }
+
+  .container {
+    -webkit-background-size: 100% 80%;
+    -moz-background-size: 100% 80%;
+    -o-background-size: 100% 80%;
+    background-size: 100% 80%; } }
+@media (max-width: 440px) {
+  #output-outer {
+    margin-top: 30%; } }
