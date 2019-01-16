@@ -80,6 +80,7 @@ table {
 
 td {
   width: 20%;
+  max-width: 100px;
   margin-left: 2.5%;
   margin-right: 2.5%;
   font-size: 2.4rem;
@@ -135,6 +136,7 @@ CLEAR BUTTON
   -webkit-transform: scale(1.2); }
 
 .clear-button {
+  background-color: rgba(255, 255, 255, 0.75);
   color: #ff3545; }
 
 .clear-button:hover {
@@ -162,7 +164,7 @@ AUX BUTTONS
   -webkit-transform: scale(1); }
 
 .aux-button {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.75);
   color: #727272; }
 
 .aux-button:hover {
@@ -182,7 +184,7 @@ INTEGER BUTTONS
 
 .integer-button {
   color: #6FA7C6;
-  background: white; }
+  background: rgba(255, 255, 255, 0.75); }
 
 .integer-button:hover {
   color: white;
@@ -211,7 +213,7 @@ OPERATOR and EQUALS BUTTONS
 
 .operator-button {
   color: #ff8a35;
-  background-color: white; }
+  background-color: rgba(255, 255, 255, 0.75); }
 
 .operator-button:hover {
   color: white;
@@ -264,7 +266,7 @@ MEDIA QUERIES
     height: 50%; }
 
   #output-outer {
-    margin-top: 25%; }
+    margin-top: 15vh; }
 
   .container {
     -webkit-background-size: 100% 80%;
@@ -273,4 +275,4 @@ MEDIA QUERIES
     background-size: 100% 80%; } }
 @media (max-width: 440px) {
   #output-outer {
-    margin-top: 30%; } }
+    margin-top: 15vh; } }
