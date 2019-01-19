@@ -1,10 +1,3 @@
-/* To-do
-1) large number rounding
-2) backspace on open parentheses
-3) multiplication after closing parentheses
-4) backspace on large numbers with e
-
-*/
 $(document).ready(function() {
 
   var init = "0";
@@ -85,6 +78,13 @@ $(document).ready(function() {
       clear();
     }
 
+    //if the current index is a closing par, push a visible multiplication sign
+    if (/\)/.test(toCalc[index.current])) {
+      phases.calcComplete = false;
+      operate(' &times; ');
+    }
+
+
     /*if the current index is NaN (i.e. if it's an operator), begin a new array index
     UNLESS IT'S A NEGATIVE SIGN*/
     if (toCalc[index.current] &&
@@ -111,6 +111,7 @@ $(document).ready(function() {
       } else {
           toCalc[index.current] = toCalc[index.current] + value;
       }
+
 
     console.log(toCalc);
 
@@ -343,14 +344,31 @@ $(document).ready(function() {
 
   $('#backspace').click(function() {
     phases.calcComplete = false;
+    console.log("current index is:")
     console.log(index.current);
-    //if there is only one number left in the entire array, make it a zero
+    //if there is only one digit left in the entire array, make it a zero
     //if that number is already a zero, ABORT MISSION
     if (toCalc[0] == "" && index.current == 0){
       phases.initial = true;
       return true;
     } else if (toCalc[index.current].length == 1 && index.current === 0) {
-      toCalc[index.current] = "0";
+      toCalc[index.current] = "";
+      display();
+      return true;
+    }
+
+    //if the current index is an exponential expression, remove the exponent
+    if (/e/.test(toCalc[index.current])) {
+      let splitExp = toCalc[index.current].split('');
+      let indexOfE = 0;
+
+      for(i = 0; i < splitExp.length; i++) {
+        if (splitExp[i] === "e") {
+          indexOfE = i;
+        }
+      }
+
+      toCalc[index.current] = splitExp.slice(0, indexOfE).join('');
       display();
       return true;
     }
@@ -364,7 +382,8 @@ $(document).ready(function() {
     accordingly*/
     if (/\(/.test(toCalc[index.current])) {
       toCalc.pop();
-      if (toCalc.length < 0) {
+      if (toCalc.length > 0) {
+        console.log("toCalc after open par removal:");
         console.log(toCalc);
         index.current--;
       } else {
@@ -375,6 +394,8 @@ $(document).ready(function() {
       phases.parCount--;
       console.log("parCount after deletion is " + phases.parCount);
       equalsToggle();
+
+      //if there is an implicit multiplication symbol, remove that as well
       if (/times/.test(toCalc[index.current])) {
         toCalc.pop()
         index.current--;
@@ -395,8 +416,8 @@ $(document).ready(function() {
       return true;
     }
 
-    /*If the current index is an HTML entity (an operator), remove the entire index...
-    and make it so you can't add another decimal point to the number before...
+    /*If the current index is an HTML entity (an operator), remove the entire index
+    and make it so you can't add another decimal point to the number before
     the operator, should a decimal point already exist.*/
     if (/&/.test(toCalc[index.current])) {
       if (/\./.test(toCalc[index.previous()])) {
@@ -405,6 +426,7 @@ $(document).ready(function() {
       toCalc.pop();
       index.current--;
       phases.operator = true;
+    //else, normal backspace
     } else {
       toCalc[index.current] = toCalc[index.current].substring(0, toCalc[index.current].length - 1);
       if (toCalc[index.current] === "" && toCalc.length > 1){
