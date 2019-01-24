@@ -1,9 +1,9 @@
 $(document).ready(function() {
 
-  var init = "0";
-  var output = init;
-  var toCalc = [""];
-  var terminalCalculation = [];
+  let init = "0";
+  let output = init;
+  let toCalc = [""];
+  let terminalCalculation = [];
 
   let phases = {
     initial: true,
@@ -21,12 +21,19 @@ $(document).ready(function() {
     },
   };
 
-  $('#output').append(output);
+
+
+  $('#preview').append(output);
+
+  //========================================
+  //DISPLAY
+  //========================================
+  
 
   function clear() {
-    $('#output').empty();
+    $('#preview').empty();
     output = init;
-    $('#output').append(output);
+    $('#preview').append(output);
     toCalc = [""];
     index.current = 0;
     phases.parCount = 0;
@@ -37,6 +44,8 @@ $(document).ready(function() {
     clear();
     phases.operator = false;
     phases.initial = true;
+    phases.decimal = true;
+    equalsToggle();
   }
 
   $('#clear').click(function() {
@@ -44,9 +53,9 @@ $(document).ready(function() {
   });
 
 
-  var toCalcForDisplay = [];
+  let toCalcForDisplay = [];
   function display() {
-    $('#output').empty();
+    $('#preview').empty();
 
 
     toCalcForDisplay = [...toCalc];
@@ -66,7 +75,7 @@ $(document).ready(function() {
       }
     })();
 
-    $('#output').append(toCalcForDisplay.join(''));
+    $('#preview').append(toCalcForDisplay.join(''));
   }
 
 
@@ -203,8 +212,8 @@ $(document).ready(function() {
 
   /*the parentheses and backspace functions need to track how many unclosed parentheses
   there are. They'll both use this function.*/
-  var equalsToggle = function() {
-    var equalsEntity = '&equals;';
+  let equalsToggle = function() {
+    let equalsEntity = '&equals;';
 
     function setEquals() {
       $('#equals').html('<span class="equals">&equals;</span>').text();
@@ -538,182 +547,186 @@ function operate(operator) {
 //CALCULATE
 //========================================
 
-  $('#equals').click(function() {
 
-    //========================================
-    //HELPER FUNCTIONS
-    //========================================
-    const operations = {
-      mainOperations: {
-        /*math performed on indices in front of and behind the index.current (operator) index,
-        then clear operator and reagent*/
-        add: function(arr, index) {
-          arr[(index-1)] = parseFloat(arr[(index-1)]) + parseFloat(arr[(index+1)]);
-          arr.splice(index, 2);
-        },
-
-        subtract: function(arr, index) {
-          arr[(index-1)] = arr[(index-1)] - arr[(index+1)];
-          arr.splice(index, 2);
-        },
-
-        multiply: function(arr, index) {
-          arr[(index-1)] = arr[(index-1)] * arr[(index+1)];
-          arr.splice(index, 2);
-        },
-
-        divide: function(arr, index) {
-          arr[(index-1)] = arr[(index-1)] / arr[(index+1)];
-          arr.splice(index, 2);
-        }
+  const operations = {
+    mainOperations: {
+      /*math performed on indices in front of and behind the index.current (operator) index,
+      then clear operator and reagent*/
+      add: function(arr, index) {
+        arr[(index-1)] = parseFloat(arr[(index-1)]) + parseFloat(arr[(index+1)]);
+        arr.splice(index, 2);
       },
 
-      multiplyAndDivide: function(arr, index) {
-        if (arr[index] === " &times; ") {
-          this.mainOperations.multiply(arr, index);
-        } else if (arr[index] === " &divide; ") {
-          this.mainOperations.divide(arr, index);
-        }
+      subtract: function(arr, index) {
+        arr[(index-1)] = arr[(index-1)] - arr[(index+1)];
+        arr.splice(index, 2);
       },
 
-      addAndSubtract: function(arr, index) {
-        if (arr[index] === " &minus; ") {
-          this.mainOperations.subtract(arr, index);
-        } else if (arr[index] === " &plus; ") {
-          this.mainOperations.add(arr, index);
-        }
+      multiply: function(arr, index) {
+        arr[(index-1)] = arr[(index-1)] * arr[(index+1)];
+        arr.splice(index, 2);
+      },
+
+      divide: function(arr, index) {
+        arr[(index-1)] = arr[(index-1)] / arr[(index+1)];
+        arr.splice(index, 2);
       }
-    };
+    },
 
-
-    function evaluate(arr) {
-      //multiplication and division first
-      for (i = 0; i < arr.length; i++) {
-        if (arr[i] === " &times; " || arr[i] === " &divide; ") {
-          operations.multiplyAndDivide(arr, i);
-          i--;
-        }
+    multiplyAndDivide: function(arr, index) {
+      if (arr[index] === " &times; ") {
+        this.mainOperations.multiply(arr, index);
+      } else if (arr[index] === " &divide; ") {
+        this.mainOperations.divide(arr, index);
       }
+    },
 
-      //after multipication and division are complete, perform addition and subtraction
-      for (i = 0; i < arr.length; i++) {
-        if (arr[i] === " &minus; " || arr[i] === " &plus; ") {
-          operations.addAndSubtract(arr, i);
-          i--;
-        }
+    addAndSubtract: function(arr, index) {
+      if (arr[index] === " &minus; ") {
+        this.mainOperations.subtract(arr, index);
+      } else if (arr[index] === " &plus; ") {
+        this.mainOperations.add(arr, index);
+      }
+    }
+  };
+
+
+  function evaluate(arr) {
+    //multiplication and division first
+    for (i = 0; i < arr.length; i++) {
+      if (arr[i] === " &times; " || arr[i] === " &divide; ") {
+        operations.multiplyAndDivide(arr, i);
+        i--;
       }
     }
 
+    //after multipication and division are complete, perform addition and subtraction
+    for (i = 0; i < arr.length; i++) {
+      if (arr[i] === " &minus; " || arr[i] === " &plus; ") {
+        operations.addAndSubtract(arr, i);
+        i--;
+      }
+    }
+  }
 
-    function evaluateByBlock(array) {
-      var start = 0;
-      var end = array.length;
 
-      function determineBlockForEvaluation(arr) {
-        console.log(start)
-        console.log(end)
-        var parExists = false;
-        (function scanForClosingPar() {
-          for (let i = 0; i < arr.length; i++) {
-            if (toCalc[i] === " )") {
-              end = i;
-              parExists = true;
+  function evaluateByBlock(array) {
+    let start = 0;
+    let end = array.length;
+
+    function determineBlockForEvaluation(arr) {
+      console.log(start)
+      console.log(end)
+      let parExists = false;
+      (function scanForClosingPar() {
+        for (let i = 0; i < arr.length; i++) {
+          if (toCalc[i] === " )") {
+            end = i;
+            parExists = true;
+            return true;
+          }
+        }
+      })();
+
+      //console.log(end);
+      if (parExists) {
+        (function findCorrespondingOpenPar() {
+          for (i = end; i > -1; i--) {
+            if (arr[i] === "( ") {
+              start = i + 1;
               return true;
             }
           }
         })();
-
-        //console.log(end);
-        if (parExists) {
-          (function findCorrespondingOpenPar() {
-            for (i = end; i > -1; i--) {
-              if (arr[i] === "( ") {
-                start = i + 1;
-                return true;
-              }
-            }
-          })();
-        }
-        console.log(start);
-        console.log(end);
       }
+      console.log(start);
+      console.log(end);
+    }
 
-      determineBlockForEvaluation(array);
-      var block = array.slice(start, end);
-      var lengthToClear = block.length;
-      console.log("Block is:")
-      console.log(block);
+    determineBlockForEvaluation(array);
+    let block = array.slice(start, end);
+    let lengthToClear = block.length;
+    console.log("Block is:")
+    console.log(block);
 
-      evaluate(block);
-      console.log(block);
+    evaluate(block);
+    console.log(block);
 
-      /*set the first value in the toCalc block equal to the result of the evaluated
-      block, then clear all other values in the block */
-      array[start] = block[0];
-      array.splice(start + 1, lengthToClear);
-      if (array[start - 1] === "( ") {
-        array.splice(start - 1, 1);
+    /*set the first value in the toCalc block equal to the result of the evaluated
+    block, then clear all other values in the block */
+    array[start] = block[0];
+    array.splice(start + 1, lengthToClear);
+    if (array[start - 1] === "( ") {
+      array.splice(start - 1, 1);
+    }
+
+    console.log("toCalc at end of evaluateByBlock is:");
+    console.log(toCalc);
+  }
+
+
+  function evaluationManager() {
+    if (toCalc.length > 1) {
+      evaluateByBlock(toCalc);
+      evaluationManager();
+    } else {
+      let calculated = toCalc[0];
+      console.log("calculated:");
+      console.log(calculated);
+      roundAndTrim(calculated);
+    }
+  }
+
+
+  function roundAndTrim(input) {
+    console.log("input is:");
+    console.log(input);
+    //Trim answer to seven decimal places and split each digit
+    let untrimmed = input.toPrecision(7).toString().split('');
+    console.log("untrimmed before trim:");
+    console.log(untrimmed);
+
+    //Chop off any zeros at the end of the answer
+    (function trim() {
+      if (untrimmed[(untrimmed.length-1)] === ".") {
+        untrimmed.splice(-1, 1);
+        return true;
+      } else if (untrimmed[(untrimmed.length-1)] === "0"
+      && untrimmed.includes(".")
+      && !untrimmed.includes("e")) {
+        untrimmed.splice(-1, 1);
+        trim();
       }
+    })();
 
-      console.log("toCalc at end of evaluateByBlock is:");
-      console.log(toCalc);
+    console.log("untrimmed after trim:");
+    console.log(untrimmed);
+
+
+    let answer = untrimmed.join('');
+    console.log("answer is:")
+    console.log(answer);
+    $('#preview').empty();
+    toCalc = [answer];
+    output = answer.toString();
+  }
+
+
+  function displayCalculation() {
+    $('#preview').append(output);
+    phases.operator = true;
+    phases.decimal = true;
+    phases.calcComplete = true;
+    phases.calculate = false;
+    index.current = 0;
+
+    if (/\./.test(output)) {
+      phases.decimal = false;
     }
+  }
 
 
-    function evaluationManager() {
-      if (toCalc.length > 1) {
-        evaluateByBlock(toCalc);
-        evaluationManager();
-      } else {
-        var calculated = toCalc[0];
-        console.log("calculated:");
-        console.log(calculated);
-        roundAndTrim(calculated);
-      }
-    }
-
-
-    function roundAndTrim(input) {
-      //Trim answer to seven decimal places and split each digit
-      var untrimmed = input.toPrecision(7).toString().split('');
-      console.log("untrimmed before trim:");
-      console.log(untrimmed);
-
-      //Chop off any zeros at the end of the answer
-      (function trim() {
-        if (untrimmed[(untrimmed.length-1)] === ".") {
-          untrimmed.splice(-1, 1);
-          return true;
-        } else if (untrimmed[(untrimmed.length-1)] === "0"
-        && untrimmed.includes(".")
-        && !untrimmed.includes("e")) {
-          untrimmed.splice(-1, 1);
-          trim();
-        }
-      })();
-
-      console.log("untrimmed after trim:");
-      console.log(untrimmed);
-
-
-      var answer = untrimmed.join('');
-      console.log("answer is:")
-      console.log(answer);
-      $('#output').empty();
-      toCalc = [answer];
-      output = answer.toString();
-    }
-
-
-    function displayCalculation() {
-      $('#output').append(output);
-      phases.operator = true;
-      phases.decimal = true;
-      phases.calcComplete = true;
-      phases.calculate = false;
-      index.current = 0;
-    }
-
+  $('#equals').click(function() {
 
     //========================================
     //CONDITIONAL EXECUTION
@@ -754,8 +767,8 @@ function operate(operator) {
         console.log(toCalcForDisplay);
 
         //skeleton of a display function:
-        $('#output').empty();
-        $('#output').append(toCalcForDisplay.join(''));
+        $('#preview').empty();
+        $('#preview').append(toCalcForDisplay.join(''));
 
         /*change everything back to normal (but don't display it just yet-- we want
         our animation to finish playing first)*/
@@ -775,18 +788,34 @@ function operate(operator) {
     } else if (phases.calculate) {
 
       console.log(toCalc);
+      /*
+      If the user calculates the input, we need to determine the "terminal
+      calculation" of that input. In doing so, should the user press '=' again
+      immediately after performing a calculation, the calculator will display the
+      previously calculated value evaluated by this terminal calculation. For
+      example:
 
-      //prepare terminal calculation for phases.calcComplete
+      '100 - 2 + 6'   ------> terminal calcuation is '+ 6'
+      '='      ------> output is 104
+      '='      ------> output is 110
+      '='      ------> output is 116
+      etc.
+
+      */
+
       (function determineTerminalCalculation() {
-        console.log(toCalc.slice(-1)[0]);
-        console.log(!isNaN(Number(toCalc.slice(-1))));
+
+        /* "normal" case with no parentheses involved. The last two indices are
+        returned */
         if (!isNaN(Number(toCalc.slice(-1)))) {
-          console.log("Just return the last two indices");
+
           terminalCalculation = toCalc.slice(-2);
+
+        //otherwise, if a closing parenthesis is involved:
         } else if (toCalc.slice(-1)[0] === " )") {
-          console.log("Gotta find an opening par!")
-          var localParCount = 0;
-          var start = 0;
+
+          let localParCount = 0;
+          let start = 0;
           (function findCorrespondingOpenPar() {
             for (i = toCalc.length - 2; i > -1; i--) {
               if (toCalc[i] === " )") {
@@ -811,18 +840,16 @@ function operate(operator) {
         }
       })();
 
-      console.log("terminalCalculation is:")
-      console.log(terminalCalculation);
-
+      //with the terminal calculation set, simply evaluate as normal:
 
       evaluationManager();
       displayCalculation();
 
-
+      /* If the user has just pressed equals, then evaluate again using the previously
+      set terminal calculation:*/
     } else if (phases.calcComplete) {
 
       toCalc = [...toCalc, ...terminalCalculation];
-      console.log(toCalc);
 
       evaluationManager();
       displayCalculation();
