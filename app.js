@@ -295,6 +295,7 @@ $(document).ready(function() {
       },
     };
 
+    $('#inputDisplay').css("color", "rgba(255, 255, 255, 1.0)")
     // if user selects parentheses immmediately after a calculation, start multiplication
     if (phases.calcComplete) {
       phases.calcComplete = false;
@@ -377,6 +378,10 @@ $(document).ready(function() {
     console.log("parCount is " + phases.parCount);
     console.log(toCalc);
     display();
+    if (toCalc[index.current] === " )" && !phases.parCount) {
+      displayPreview();
+      phases.calculate = true;
+    }
   });
 
   //========================================
@@ -526,7 +531,8 @@ $(document).ready(function() {
 //========================================
 
 function operate(operator) {
-  $('#inputDisplay').css("color", "rgba(255, 255, 255, 1.0)")
+  $('#inputDisplay').css("color", "rgba(255, 255, 255, 1.0)");
+  phases.calculate = false;
 
   if (!phases.operator) {
     //if there's already an operator in place, change that operator
@@ -801,8 +807,8 @@ function operate(operator) {
         console.log(toCalcForDisplay);
 
         //skeleton of a display function:
-        $('#preview').empty();
-        $('#preview').append(toCalcForDisplay.join(''));
+        $('#inputDisplay').empty();
+        $('#inputDisplay').append(toCalcForDisplay.join(''));
 
         /*change everything back to normal (but don't display it just yet-- we want
         our animation to finish playing first)*/
