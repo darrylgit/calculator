@@ -22,18 +22,21 @@ $(document).ready(function() {
   };
 
 
-
+  $('#inputDisplay').append(output);
   $('#preview').append(output);
 
   //========================================
   //DISPLAY
   //========================================
-  
+
 
   function clear() {
     $('#preview').empty();
+    $('#inputDisplay').empty();
     output = init;
     $('#preview').append(output);
+    $('#inputDisplay').append(output);
+    $('#inputDisplay').css("color", "rgba(255, 255, 255, 0.0)")
     toCalc = [""];
     index.current = 0;
     phases.parCount = 0;
@@ -54,11 +57,12 @@ $(document).ready(function() {
 
 
   let toCalcForDisplay = [];
-  function display() {
-    $('#preview').empty();
 
+  function displayInput() {
+    $('#inputDisplay').empty();
 
     toCalcForDisplay = [...toCalc];
+
     if (toCalcForDisplay.length === 1 && toCalcForDisplay[0] === "") {
       toCalcForDisplay = [init];
       toCalc = [""];
@@ -75,12 +79,38 @@ $(document).ready(function() {
       }
     })();
 
-    $('#preview').append(toCalcForDisplay.join(''));
+    $('#inputDisplay').append(toCalcForDisplay.join(''));
+  }
+
+
+  function displayPreview() {
+    let outputBackup = output;
+    let toCalcBackup = [...toCalc];
+    let toCalcForDisplayBackup = [...toCalcForDisplay];
+    evaluationManager();
+    console.log("output is");
+    console.log(output);
+    $('#preview').append(output);
+    output = outputBackup;
+    toCalc = toCalcBackup;
+    toCalcForDisplay = toCalcForDisplayBackup;
+  }
+
+
+
+  function display() {
+    console.log(phases);
+    displayInput();
+    if (toCalc.length === 1 && toCalc[0] !== "( ") {
+      $('#preview').empty();
+      $('#preview').append(toCalcForDisplay.join(''));
+    }
   }
 
 
   function load(value) {
     phases.initial = false;
+    $('#inputDisplay').css("color", "rgba(255, 255, 255, 1.0)")
 
     //if a calculation has just been performed, clear it and start a new array
     if (phases.calcComplete) {
@@ -136,8 +166,9 @@ $(document).ready(function() {
     phases.operator = true;
     let val = $(this).data('value').toString();
     load(val);
-    if (toCalc.length > 2) {
+    if (toCalc.length > 2 && phases.parCount === 0) {
       phases.calculate = true;
+      displayPreview();
     }
   });
 
@@ -145,8 +176,9 @@ $(document).ready(function() {
     if (toCalc[index.current] != "0") {
       phases.operator = true;
       load("0");
-      if (toCalc.length > 2) {
+      if (toCalc.length > 2 && phases.parCount === 0) {
         phases.calculate = true;
+        displayPreview();
       }
     }
   });
@@ -494,6 +526,7 @@ $(document).ready(function() {
 //========================================
 
 function operate(operator) {
+  $('#inputDisplay').css("color", "rgba(255, 255, 255, 1.0)")
 
   if (!phases.operator) {
     //if there's already an operator in place, change that operator
@@ -714,6 +747,7 @@ function operate(operator) {
 
   function displayCalculation() {
     $('#preview').append(output);
+    $('#inputDisplay').css("color", "rgba(255, 255, 255, 0.0)")
     phases.operator = true;
     phases.decimal = true;
     phases.calcComplete = true;
@@ -790,15 +824,15 @@ function operate(operator) {
       console.log(toCalc);
       /*
       If the user calculates the input, we need to determine the "terminal
-      calculation" of that input. In doing so, should the user press '=' again
+      calculation" of that input. Having done so, should the user press '=' again
       immediately after performing a calculation, the calculator will display the
       previously calculated value evaluated by this terminal calculation. For
       example:
 
       '100 - 2 + 6'   ------> terminal calcuation is '+ 6'
-      '='      ------> output is 104
-      '='      ------> output is 110
-      '='      ------> output is 116
+      '='             ------> output is 104
+      '='             ------> output is 110
+      '='             ------> output is 116
       etc.
 
       */

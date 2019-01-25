@@ -68,9 +68,9 @@ DISPLAY
 ===================================
 */
 
-#output-outer {
+.output-outer {
   background-color: transparent;
-  margin-top: 35%;
+  margin-top: 28%;
   padding-right: 1.5rem;
   font-size: 3em;
   font-weight: 500;
@@ -79,11 +79,27 @@ DISPLAY
   white-space: nowrap;
   text-rendering: geometricPrecision;
   -webkit-transform: scale(1.0);
+
+  br {
+    display: block;
+
+  }
 }
 
-#output {
+#inputDisplay,
+#preview {
   float: right;
 }
+
+#inputDisplay {
+  color: rgba(255, 255, 255, 0.0);
+  font-size: .6em;
+}
+
+#preview {
+  margin-top: -40px;
+}
+
 
 
 /*
@@ -345,7 +361,7 @@ MEDIA QUERIES
   }
 
   #output-outer {
-    margin-top: 15vh;
+    margin-top: 12vh;
   }
 
   .container {
@@ -355,6 +371,6 @@ MEDIA QUERIES
 
 @media (max-width: 440px) {
   #output-outer {
-    margin-top: 15vh;
+    margin-top: 12vh;
   }
 }
