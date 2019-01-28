@@ -404,7 +404,7 @@ $(document).ready(function() {
     }
 
     //if the current index is an exponential expression, remove the exponent
-    if (/e/.test(toCalc[index.current])) {
+    if (/e/.test(toCalc[index.current]) && !/\&/.test(toCalc[index.current])) {
       let splitExp = toCalc[index.current].split('');
       let indexOfE = 0;
 
