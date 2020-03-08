@@ -8,6 +8,7 @@ I created this calculator for freeCodeCamp using jQuery, going above and beyond 
 
 - Sass / CSS
 - JQuery
+- Javascript
 
 ## LICENSE
 
